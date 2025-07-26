@@ -10,7 +10,7 @@
 
     <!-- BARRA DE NAVEGACIÓN  -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href=".">ProductApp</a>
+      <a class="navbar-brand" href=".">Registro Convención</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -32,42 +32,53 @@
               <!-- FORMULARIO PARA AGREGAR PRODUCTO -->
               <form id="product-form">
                 <div class="form-group">
-                  <input class="form-control" type="text" id="name" placeholder="Nombre de producto" required>
+                  <input class="form-control" type="text" id="name" placeholder="Nombre completo" required>
                   <div id="estado-nombre" style="display: none;"></div>
                 </div>
                 <div class="form-group">
-                  <select id="marca" name="marca">
-                    <option value="">Selecciona una marca</option>
-                    <option value="sony">Sony</option>
-                    <option value="universal">Universal</option>
-                    <option value="unknow">Unknow</option>
-                    <option value="Atlantic">Atlantic</option>
-                   
+                  <select id="categoria" name="categoria">
+                    <option value="">Selecciona una categoria</option>
+                    <option value="SAEC">SAEC</option>
+                    <option value="SJEC">SJEC</option>
+                    <option value="SIEC">SIEC</option>
+                    <option value="SInfEC">SInfEC</option>
+                    <option value="SMEC">SMEC</option> 
+                    <option value="GAEC">GAEC</option>
+                    <option value="GJEC">GJEC</option>
+                    <option value="GIEC">GIEC</option>
+                    <option value="GInfEC">GInfEC</option>
+                    <option value="GMEC">GMEC</option>                  
                   </select>
                 </div>
                 <div class="form-group">
-                  <input class="form-control" type="text" id="modelo" placeholder="Modelo de producto" required>
+                  <input class="form-control" type="text" id="sociedad" placeholder="Nombre de la sociedad" required>
                   <div id="estado-modelo" style="display: none;"></div>
                 </div>
                 <div class="form-group">
-                  <input class="form-control" type="text" id="precio" placeholder="Precio de producto" required>
+                  <input class="form-control" type="text" id="iglesia" placeholder="Tipo y nombre de la Iglesia" required>
                   <div id="estado-precio" style="display: none;"></div>
                 </div>
                 <div class="form-group">
-                  <textarea class="form-control" id="detalles" cols="30" rows="10" placeholder="Detalles" required></textarea>
+                  <textarea class="form-control" id="domicilio" cols="20" rows="10" placeholder="Domicilio de la Iglesia" required></textarea>
                   <div id="estado-detalles" style="display: none;"></div>
                 </div>
                 <div class="form-group">
-                  <input class="form-control" type="text" id="unidades" placeholder="Unidades de producto" required>
-                  <div id="estado-unidades" style="display: none;"></div>
+                  <select id="tipodelegado" name="tipodelegado">
+                    <option value="">Selecciona una categoria</option>
+                    <option value="oficial">Oficial</option>
+                    <option value="fraternal">Fraternal</option>
+                    <option value="visita">Visita</option>
+                    <option value="Runiones">Representantes de Uniones</option>
+                    <option value="Ppresbiterio">Personal del Presbiterio</option>                 
+                  </select>
                 </div>
                 <div class="form-group">
-                  <input class="form-control" type="text" id="imagen" placeholder="Imagen de producto" required>
+                  <input class="form-control" type="text" id="couta" placeholder="Monto" required>
                   <div id="estado-imagen" style="display: none;"></div>
                 </div>
-                <input type="hidden" id="productId">
+                <input type="hidden" id="delegadoID">
                 <button class="btn btn-primary btn-block text-center" type="submit">
-                  Agregar Producto
+                  Agregar Delegado
                 </button>
               </form>
             </div>
@@ -76,7 +87,7 @@
 
         <!-- TABLA  -->
         <div class="col-md-7">
-          <div class="card my-4" id="product-result">
+          <div class="card my-4" id="delegado-result">
             <div class="card-body">
               <!-- RESULTADO -->
               <ul id="container"></ul>
@@ -88,10 +99,14 @@
               <tr>
                 <td>Id</td>
                 <td>Nombre</td>
-                <td>Descripción</td>
+                <td>Categoria</td>
+                <td>Sociedad</td>
+                <td>Iglesia</td>
+                <td>Domicilio</td>
+                <td>Tipo de delegado</td>
               </tr>
             </thead>
-            <tbody id="products"></tbody>
+            <tbody id="delegados"></tbody>
           </table>
         </div>
       </div>
