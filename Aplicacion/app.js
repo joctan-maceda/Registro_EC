@@ -1,4 +1,5 @@
 // JSON BASE A MOSTRAR EN FORMULARIO
+/*
 var baseJSON = {
     "precio": 0.0,
     "unidades": 1,
@@ -7,44 +8,45 @@ var baseJSON = {
     "detalles": "NA",
     "imagen": "img/default.png"
   };
+*/
 
 $(document).ready(function(){
     let edit = false;
 
-    let JsonString = JSON.stringify(baseJSON,null,2);
-    $('#description').val(JsonString);
-    $('#product-result').hide();
-    listarProductos();
+    //let JsonString = JSON.stringify(baseJSON,null,2);
+    //$('#description').val(JsonString);
+    $('#delegados-result').hide();
+    listarDelegados();
 
-    function listarProductos() {
+    function listarDelegados() {
         $.ajax({
-            url: './backend/product-list.php',
+            url: './backend/delegados-list.php',
             type: 'GET',
             success: function(response) {
                 // SE OBTIENE EL OBJETO DE DATOS A PARTIR DE UN STRING JSON
-                const productos = JSON.parse(response);
+                const delegados = JSON.parse(response);
             
                 // SE VERIFICA SI EL OBJETO JSON TIENE DATOS
-                if(Object.keys(productos).length > 0) {
+                if(Object.keys(delegados).length > 0) {
                     // SE CREA UNA PLANTILLA PARA CREAR LAS FILAS A INSERTAR EN EL DOCUMENTO HTML
                     let template = '';
 
-                    productos.forEach(producto => {
+                    productos.forEach(delegado => {
                         // SE CREA UNA LISTA HTML CON LA DESCRIPCIÓN DEL PRODUCTO
                         let descripcion = '';
-                        descripcion += '<li>precio: '+producto.precio+'</li>';
-                        descripcion += '<li>unidades: '+producto.unidades+'</li>';
-                        descripcion += '<li>modelo: '+producto.modelo+'</li>';
-                        descripcion += '<li>marca: '+producto.marca+'</li>';
-                        descripcion += '<li>detalles: '+producto.detalles+'</li>';
+                        descripcion += '<li>categoria: '+delegado.categoria+'</li>';
+                        descripcion += '<li>sociedad: '+delegado.sociedad+'</li>';
+                        descripcion += '<li>iglesia: '+delegado.iglesia+'</li>';
+                        descripcion += '<li>domicilio: '+delegado.domicilio+'</li>';
+                        descripcion += '<li>Tipo delegado: '+delegado.tipodelegado+'</li>';
                     
                         template += `
-                            <tr productId="${producto.id}">
-                                <td>${producto.id}</td>
-                                <td><a href="#" class="product-item">${producto.nombre}</a></td>
+                            <tr delegadoID="${delegado.id}">
+                                <td>${delegado.id}</td>
+                                <td><a href="#" class="delegado-item">${delegado.nombre}</a></td>
                                 <td><ul>${descripcion}</ul></td>
                                 <td>
-                                    <button class="product-delete btn btn-danger" >
+                                    <button class="delegado-delete btn btn-danger" >
                                         Eliminar
                                     </button>
                                 </td>
@@ -52,7 +54,7 @@ $(document).ready(function(){
                         `;
                     });
                     // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "productos"
-                    $('#products').html(template);
+                    $('#delegados').html(template);
                 }
             }
         });
@@ -62,36 +64,36 @@ $(document).ready(function(){
         if($('#search').val()) {
             let search = $('#search').val();
             $.ajax({
-                url: './backend/product-search.php?search='+$('#search').val(),
+                url: './backend/delegado-search.php?search='+$('#search').val(),
                 data: {search},
                 type: 'GET',
                 success: function (response) {
                     if(!response.error) {
                         // SE OBTIENE EL OBJETO DE DATOS A PARTIR DE UN STRING JSON
-                        const productos = JSON.parse(response);
+                        const delegados = JSON.parse(response);
                         
                         // SE VERIFICA SI EL OBJETO JSON TIENE DATOS
-                        if(Object.keys(productos).length > 0) {
+                        if(Object.keys(delegados).length > 0) {
                             // SE CREA UNA PLANTILLA PARA CREAR LAS FILAS A INSERTAR EN EL DOCUMENTO HTML
                             let template = '';
                             let template_bar = '';
 
-                            productos.forEach(producto => {
+                            productos.forEach(delegado => {
                                 // SE CREA UNA LISTA HTML CON LA DESCRIPCIÓN DEL PRODUCTO
                                 let descripcion = '';
-                                descripcion += '<li>precio: '+producto.precio+'</li>';
-                                descripcion += '<li>unidades: '+producto.unidades+'</li>';
-                                descripcion += '<li>modelo: '+producto.modelo+'</li>';
-                                descripcion += '<li>marca: '+producto.marca+'</li>';
-                                descripcion += '<li>detalles: '+producto.detalles+'</li>';
+                                descripcion += '<li>categoria: '+delegado.categoria+'</li>';
+                                descripcion += '<li>sociedad: '+delegado.sociedad+'</li>';
+                                descripcion += '<li>iglesia: '+delegado.iglesia+'</li>';
+                                descripcion += '<li>domicilio: '+delegado.domicilio+'</li>';
+                                descripcion += '<li>Tipo delegado: '+delegado.tipodelegado+'</li>';
                             
                                 template += `
-                                    <tr productId="${producto.id}">
-                                        <td>${producto.id}</td>
-                                        <td><a href="#" class="product-item">${producto.nombre}</a></td>
+                                    <tr delegadoID="${delegado.id}">
+                                        <td>${delegado.id}</td>
+                                        <td><a href="#" class="delegado-item">${delegado.nombre}</a></td>
                                         <td><ul>${descripcion}</ul></td>
                                         <td>
-                                            <button class="product-delete btn btn-danger">
+                                            <button class="delegado-delete btn btn-danger">
                                                 Eliminar
                                             </button>
                                         </td>
@@ -99,37 +101,37 @@ $(document).ready(function(){
                                 `;
 
                                 template_bar += `
-                                    <li>${producto.nombre}</il>
+                                    <li>${delegado.nombre}</il>
                                 `;
                             });
                             // SE HACE VISIBLE LA BARRA DE ESTADO
-                            $('#product-result').show();
+                            $('#delegado-result').show();
                             // SE INSERTA LA PLANTILLA PARA LA BARRA DE ESTADO
                             $('#container').html(template_bar);
                             // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "productos"
-                            $('#products').html(template);    
+                            $('#delegados').html(template);    
                         }
                     }
                 }
             });
         }
         else {
-            $('#product-result').hide();
+            $('#delegado-result').hide();
         }
     });
 
-    $('#product-form').submit(e => {
+    $('#delegado-form').submit(e => {
         e.preventDefault();
 
         let postData = {
             nombre: $('#name').val(),
-            id: $('#productId').val(),
-            marca: $('#marca').val(),
-            modelo: $('#modelo').val(),
-            precio: $('#precio').val(),
-            detalles: $('#detalles').val(),
-            unidades: $('#unidades').val(),
-            imagen: $('#imagen').val()
+            id: $('#delegadoID').val(),
+            categoria: $('#categoria').val(),
+            sociedad: $('#sociedad').val(),
+            iglesia: $('#iglesia').val(),
+            domicilio: $('#domicilio').val(),
+            tipodelegado: $('#tipodelegado').val(),
+            couta: $('#couta').val()            
         };
 
         if (!validarFormulario(postData)) {
@@ -137,7 +139,7 @@ $(document).ready(function(){
         }
 
 
-        const url = edit === false ? './backend/product-add.php' : './backend/product-edit.php';
+        const url = edit === false ? './backend/delegado-add.php' : './backend/delegado-edit.php';
         console.log(postData)
         $.post(url, postData, (response) => {
             console.log(response);
@@ -151,28 +153,28 @@ $(document).ready(function(){
                     `;
             // SE REINICIA EL FORMULARIO
             $('#name').val('');
-            $('#marca').val('');
-            $('#modelo').val('');
-            $('#precio').val('');
-            $('#detalles').val('');
-            $('#unidades').val('');
-            $('#imagen').val('');
+            $('#categoria').val('');
+            $('#sociedad').val('');
+            $('#iglesia').val('');
+            $('#domicilio').val('');
+            $('#tipodelegado').val('');
+            $('#couta').val('');
             // SE HACE VISIBLE LA BARRA DE ESTADO
-            $('#product-result').show();
+            $('#delegado-result').show();
             // SE INSERTA LA PLANTILLA PARA LA BARRA DE ESTADO
             $('#container').html(template_bar);
             // SE LISTAN TODOS LOS PRODUCTOS
-            listarProductos();
+            listarDelegados();
             // SE REGRESA LA BANDERA DE EDICIÓN A false
             edit = false;
         });
     });
 
-    $(document).on('click', '.product-delete', (e) => {
-        if(confirm('¿Realmente deseas eliminar el producto?')) {
+    $(document).on('click', '.delegado-delete', (e) => {
+        if(confirm('¿Realmente deseas eliminar el Delegado?')) {
             const element = $(this)[0].activeElement.parentElement.parentElement;
-            const id = $(element).attr('productId');
-            $.post('./backend/product-delete.php', {id}, (response) => {
+            const id = $(element).attr('delegadoID');
+            $.post('./backend/delegado-delete.php', {id}, (response) => {
                 let respuesta = JSON.parse(response);
                 // SE CREA UNA PLANTILLA PARA CREAR INFORMACIÓN DE LA BARRA DE ESTADO
                 let template_bar = '';
@@ -181,47 +183,47 @@ $(document).ready(function(){
                         <li style="list-style: none;">message: ${respuesta.message}</li>
                     `;
                 // SE HACE VISIBLE LA BARRA DE ESTADO
-                $('#product-result').show();
+                $('#delegado-result').show();
                 // SE INSERTA LA PLANTILLA PARA LA BARRA DE ESTADO
                 $('#container').html(template_bar);
-                listarProductos();
+                listarDelegados();
             });
         }
     });
 
-    $(document).on('click', '.product-item', (e) => {
+    $(document).on('click', '.delegado-item', (e) => {
         const element = $(this)[0].activeElement.parentElement.parentElement;
-        const id = $(element).attr('productId');
-        $.post('./backend/product-single.php', {id}, (response) => {
+        const id = $(element).attr('delegadoID');
+        $.post('./backend/delegado-single.php', {id}, (response) => {
             console.log(response)
             // SE CONVIERTE A OBJETO EL JSON OBTENIDO
             let product = JSON.parse(response);
             // SE INSERTAN LOS DATOS ESPECIALES EN LOS CAMPOS CORRESPONDIENTES
-            $('#name').val(product.nombre);
+            $('#name').val(delegado.nombre);
             // EL ID SE INSERTA EN UN CAMPO OCULTO PARA USARLO DESPUÉS PARA LA ACTUALIZACIÓN
-            $('#productId').val(product.id);
+            $('#productId').val(delegado.id);
             // SE ELIMINA nombre, eliminado E id PARA PODER MOSTRAR EL JSON EN EL <textarea>
-            $('#marca').val(product.marca);
-            $('#modelo').val(product.modelo);
-            $('#precio').val(product.precio);
-            $('#detalles').val(product.detalles);
-            $('#unidades').val(product.unidades);
-            $('#imagen').val(product.imagen);
+            $('#categoria').val(delegado.categoria);
+            $('#sociedad').val(delegado.sociedad);
+            $('#iglesia').val(delegado.iglesia);
+            $('#domicilio').val(delegado.domicilio);
+            $('#tipodelegado').val(delegado.tipodelegado);
+            $('#couta').val(delegado.couta);
             
             // SE PONE LA BANDERA DE EDICIÓN EN true
             edit = true;
         });
         e.preventDefault();
     });    
-
+/*
 
     // Función para validar el formulario completo
     function validarFormulario(data) {
         return validarNombre(data.nombre) &&
-            validarModelo(data.modelo) &&
-            validarPrecio(data.precio) &&
-            validarDetalles(data.detalles) &&
-            validarUnidades(data.unidades);
+            validarModelo(data.categoria) &&
+            validarPrecio(data.sociedad) &&
+            validarDetalles(data.iglesia) &&
+            validarUnidades(data.domicilio);
     }
 
     // Funciones de validación individuales con mensajes en tiempo real
@@ -284,5 +286,5 @@ $(document).ready(function(){
         return true;
     }
 
-
+*/
 });
