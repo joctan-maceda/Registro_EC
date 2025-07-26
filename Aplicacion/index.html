@@ -33,21 +33,22 @@
               <form id="delegado-form">
                 <div class="form-group">
                   <input class="form-control" type="text" id="name" placeholder="Nombre completo" required>
+                  <div id="lista-nombres"></div><br>
                   <div id="estado-nombre" style="display: none;"></div>
                 </div>
                 <div class="form-group">
-                  <select id="categoria" name="categoria">
-                    <option value="">Selecciona una categoria</option>
-                    <option value="SAEC">SAEC</option>
-                    <option value="SJEC">SJEC</option>
-                    <option value="SIEC">SIEC</option>
-                    <option value="SInfEC">SInfEC</option>
-                    <option value="SMEC">SMEC</option> 
-                    <option value="GAEC">GAEC</option>
-                    <option value="GJEC">GJEC</option>
-                    <option value="GIEC">GIEC</option>
-                    <option value="GInfEC">GInfEC</option>
-                    <option value="GMEC">GMEC</option>                  
+                  <select class="delegado-categoria" id="delegado-categoria" name="categoria">
+                    <option class='delegado-categoria' value="">Selecciona una categoria</option>
+                    <option class='delegado-categoria' value="SAEC">SAEC</option>
+                    <option class='delegado-categoria' value="SJEC">SJEC</option>
+                    <option class='delegado-categoria' value="SIEC">SIEC</option>
+                    <option class='delegado-categoria' value="SInfEC">SInfEC</option>
+                    <option class='delegado-categoria' value="SMEC">SMEC</option> 
+                    <option class='delegado-categoria' value="GAEC">GAEC</option>
+                    <option class='delegado-categoria' value="GJEC">GJEC</option>
+                    <option class='delegado-categoria' value="GIEC">GIEC</option>
+                    <option class='delegado-categoria' value="GInfEC">GInfEC</option>
+                    <option class='delegado-categoria' value="GMEC">GMEC</option>                  
                   </select>
                 </div>
                 <div class="form-group">
@@ -65,16 +66,16 @@
                 <div class="form-group">
                   <select id="tipodelegado" name="tipodelegado">
                     <option value="">Selecciona una categoria</option>
-                    <option value="oficial">Oficial</option>
-                    <option value="fraternal">Fraternal</option>
-                    <option value="visita">Visita</option>
-                    <option value="Runiones">Representantes de Uniones</option>
-                    <option value="Ppresbiterio">Personal del Presbiterio</option>                 
+                    <option value="Oficial">Oficial</option>
+                    <option value="Fraternal">Fraternal</option>
+                    <option value="Visita">Visita</option>
+                    <option value="Representantes de Uniones">Representantes de Uniones</option>
+                    <option value="Personal del Presbiterio">Personal del Presbiterio</option>                 
                   </select>
                 </div>
                 <div class="form-group">
-                  <input class="form-control" type="text" id="couta" placeholder="Monto" required>
-                  <div id="estado-couta" style="display: none;"></div>
+                  <input class="form-control" type="text" id="cuota" placeholder="Monto" contenteditable>
+                  <div id="estado-cuota" style="display: none;"></div>
                 </div>
                 <input type="hidden" id="delegadoID">
                 <button class="btn btn-primary btn-block text-center" type="submit">
@@ -87,7 +88,7 @@
 
         <!-- TABLA  -->
         <div class="col-md-7">
-          <div class="card my-4" id="delegados-result">
+          <div class="card my-4" id="delegado-result">
             <div class="card-body">
               <!-- RESULTADO -->
               <ul id="container"></ul>
@@ -99,7 +100,7 @@
               <tr>
                 <td>Id</td>
                 <td>Nombre</td>
-                <td>descripción</td>
+                <td>Descripción</td>
               </tr>
             </thead>
             <tbody id="delegados"></tbody>

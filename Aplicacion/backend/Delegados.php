@@ -62,7 +62,7 @@ class Delegados extends DataBase {
         $this->response = $data;
     }
 
-    public function add($product) {
+    public function add($delegado) {
         $data = array(
             'status'  => 'error',
             'message' => 'Ya existe un delegado con ese nombre'
@@ -77,7 +77,7 @@ class Delegados extends DataBase {
             if (is_object($result) && $result->num_rows == 0) {
                 $this->conexion->set_charset("utf8");
 
-                $sql = "INSERT INTO delegados VALUES (null, '{$delegadoData->nombre}', '{$delegadoData->categoria}', '{$delegadoData->sociedad}', {$delegadoData->iglesia}, '{$delegadoData->domicilio}', {$delegadoData->tipodelegado}, '{$delegadoData->cuota}', 0)";
+                $sql = "INSERT INTO delegados VALUES (null, '{$delegadoData->nombre}', '{$delegadoData->categoria}', '{$delegadoData->sociedad}', '{$delegadoData->iglesia}', '{$delegadoData->domicilio}', '{$delegadoData->tipodelegado}',{$delegadoData->cuota}, 0)";
                 
                 if ($this->query($sql)) {
                     $data['status'] = "success";
@@ -134,10 +134,10 @@ class Delegados extends DataBase {
                         nombre = '{$delegadoData->nombre}', 
                         categoria = '{$delegadoData->categoria}', 
                         sociedad = '{$delegadoData->sociedad}', 
-                        iglesia = {$delegadoData->iglesia}, 
+                        iglesia = '{$delegadoData->iglesia}', 
                         domicilio = '{$delegadoData->domicilio}', 
-                        tipodelegado = {$delegadoData->tipodelegado}, 
-                        cuota = '{$delegadoData->couta}' 
+                        tipodelegado = '{$delegadoData->tipodelegado}', 
+                        cuota = {intval($delegadoData->cuota)}
                     WHERE id = {$delegadoData->id} AND eliminado = 0";
     
             // Ejecuta la consulta y actualiza el estado según el resultado
@@ -214,7 +214,57 @@ class Delegados extends DataBase {
         // Almacena el resultado en response para luego poder usar getData()
         $this->response = $data;
     }
+
+    public function search_miembros_ec($search) {
+        // Inicializa el arreglo de respuesta
+        $data = array();
     
+        // Construye la consulta para buscar en múltiples campos
+        $sql = "SELECT * FROM miembros_ec WHERE (nombre LIKE '%{$search}%') AND eliminado = 0";
+        $result = $this->query($sql);
+    
+        // Verifica si hubo resultados y procesa los datos
+        if (is_object($result) && $result->num_rows > 0) {
+            // Obtiene todos los resultados como un arreglo asociativo
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+    
+            if (!is_null($rows)) {
+                // Codifica a UTF-8 y mapea los datos al arreglo de respuesta
+                foreach ($rows as $num => $row) {
+                    foreach ($row as $key => $value) {
+                        $data[$num][$key] = utf8_encode($value);
+                    }
+                }
+            }
+            $result->free();
+        } else {
+            die('Error en la consulta: ' . mysqli_error($this->conexion));
+        }
+    
+        // Almacena el resultado en response para luego poder usar getData()
+        $this->response = $data;
+    }
+    
+    public function miembros_ec($nombreSeleccionado){
+        $data = array();
+        $sql = "SELECT * FROM miembros_ec WHERE nombre = '{$nombreSeleccionado}' ";
+        $result = $this->query($sql);
+        if (is_object($result) && $result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            if (!is_null($row)) {
+                foreach ($row as $key => $value) {
+                    $data[$key] = utf8_encode($value);
+                }
+            }
+            $result->free();
+        } else {
+            die('Error en la consulta: ' . mysqli_error($this->conexion));
+        }
+
+        // Almacena los datos obtenidos en la propiedad response
+        $this->response = $data;
+    }
+
     public function getData() {
         // Convierte el array de response a un string JSON y lo retorna
         return json_encode($this->response, JSON_PRETTY_PRINT);
