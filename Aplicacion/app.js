@@ -170,7 +170,7 @@ $(document).ready(function(){
 
     $('#delegado-form').submit(e => {
         e.preventDefault();
-        
+        console.log($('#cuota').val());
         let postData = {
             nombre: $('#name').val(),
             id: $('#delegadoID').val(),
@@ -178,7 +178,8 @@ $(document).ready(function(){
             sociedad: $('#sociedad').val(),
             iglesia: $('#iglesia').val(),
             domicilio: $('#domicilio').val(),
-            tipodelegado: $('#tipodelegado').val()            
+            tipodelegado: $('#tipodelegado').val(),
+            cuota: $('#cuota').val()
         };
         //validar_Cuota();
         /*
@@ -218,15 +219,35 @@ $(document).ready(function(){
         });
     });
 
-    $(document).on('click', '.delegado-categoria', function(){
-        let categoria = $(this).text().trim();
+    $('#categoria').on('change', function(){
+        let categoria = $(this).val();
         console.log(categoria);
         if (categoria === "SInfEC" || categoria === "GInfEC" ){
             $('#cuota').val(350);
         }else if (categoria === ""){
             $('#cuota').val(0);
-        }else {
-            $('#cuota').val(550);
+        }
+    });
+
+    $('#tipodelegado').on('change', function(){
+        let tipodelegado = $(this).val();
+        let categoria = $('#categoria').val();
+        if ((tipodelegado === "Fraternal" || tipodelegado === "Oficial" || tipodelegado === "Visita") && 
+            (categoria === "SInfEC" || categoria === "GInfEC")) {
+            
+            $('#cuota').val(225);
+
+        } else if (tipodelegado === "Fraternal" || tipodelegado === "Consejeros y Superintendentes") {
+            $('#cuota').val(500);
+
+        } else if (tipodelegado === "Oficial") {
+            $('#cuota').val(450);
+
+        } else if (tipodelegado === "Visita") {
+            $('#cuota').val(650);
+
+        } else {
+            $('#cuota').val(0);
         }
     });
 
@@ -277,18 +298,6 @@ $(document).ready(function(){
         e.preventDefault();
     });    
 
-    function validar_Cuota(data){
-        if (data.categoria === "SInfEC" || data.categoria === "GInfEC" ){
-            data.cuota = 350;
-        }else if (data.categoria === ""){
-            data.cuota = 0;
-        }else if(data.tipodelegado === "Fraternal"){
-            data.cuota = 450;
-        }else if(data.tipodelegado === "Oficiales"){
-            data.cuota = 550;
-        }
-        $('#cuota').val(data.cuota);
-    }
 /*
 
     // Función para validar el formulario completo

@@ -12,6 +12,7 @@ abstract class DataBase {
         if (!$this->conexion) {
             die('¡Base de datos NO conectada!');
         }
+        mysqli_set_charset($this->conexion, "utf8mb4");
     }
 
     // Método abstracto para que las subclases implementen sus propias consultas
