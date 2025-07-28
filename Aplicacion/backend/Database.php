@@ -8,6 +8,7 @@ abstract class DataBase {
     public function __construct($user, $password, $dbName) {
         $host = 'localhost';
         $this->conexion = @mysqli_connect($host, $user, $password, $dbName);
+        
         // Verifica si la conexión fue exitosa
         if (!$this->conexion) {
             die('¡Base de datos NO conectada!');

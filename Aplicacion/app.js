@@ -38,7 +38,7 @@ $(document).ready(function(){
                                 <td><a href="#" class="delegado-item">${delegado.nombre}</a></td>
                                 <td><ul>${descripcion}</ul></td>
                                 <td>
-                                    <button class="delegados-edit btn btn-warning" >
+                                    <button class="delegado-item btn btn-warning" >
                                         Editar
                                     </button>
                                 </td>
@@ -140,7 +140,7 @@ $(document).ready(function(){
                                         <td><a href="#" class="delegado-item">${delegado.nombre}</a></td>
                                         <td><ul>${descripcion}</ul></td>
                                         <td>
-                                            <button class="delegados-edit btn btn-warning">
+                                            <button class="delegado-item btn btn-warning">
                                                 Editar
                                             </button>
                                         </td>
@@ -181,11 +181,6 @@ $(document).ready(function(){
             tipodelegado: $('#tipodelegado').val(),
             cuota: $('#cuota').val()
         };
-        //validar_Cuota();
-        /*
-        if (!validarFormulario(postData)) {
-            return;
-        }*/
 
 
         const url = edit === false ? './backend/delegados-add.php' : './backend/delegados-edit.php';

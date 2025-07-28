@@ -2,6 +2,7 @@
 namespace Backend;
 require_once 'DataBase.php';
 
+
 class Delegados extends DataBase {
     protected $response;
 
@@ -29,7 +30,7 @@ class Delegados extends DataBase {
             $row = $result->fetch_assoc();
             if (!is_null($row)) {
                 foreach ($row as $key => $value) {
-                    $data[$key] = utf8_encode($value);
+                    $data[$key] = $value;
                 }
             }
             $result->free();
@@ -50,7 +51,7 @@ class Delegados extends DataBase {
             $row = $result->fetch_assoc();
             if (!is_null($row)) {
                 foreach ($row as $key => $value) {
-                    $data[$key] = utf8_encode($value);
+                    $data[$key] = $value;
                 }
             }
             $result->free();
@@ -172,7 +173,7 @@ class Delegados extends DataBase {
                 // Codifica a UTF-8 y mapea los datos al arreglo de respuesta
                 foreach ($rows as $num => $row) {
                     foreach ($row as $key => $value) {
-                        $data[$num][$key] = utf8_encode($value);
+                        $data[$num][$key] = $value;
                     }
                 }
             }
@@ -202,7 +203,7 @@ class Delegados extends DataBase {
                 // Codifica a UTF-8 y mapea los datos al arreglo de respuesta
                 foreach ($rows as $num => $row) {
                     foreach ($row as $key => $value) {
-                        $data[$num][$key] = utf8_encode($value);
+                        $data[$num][$key] = $value;
                     }
                 }
             }
@@ -232,7 +233,7 @@ class Delegados extends DataBase {
                 // Codifica a UTF-8 y mapea los datos al arreglo de respuesta
                 foreach ($rows as $num => $row) {
                     foreach ($row as $key => $value) {
-                        $data[$num][$key] = utf8_encode($value);
+                        $data[$num][$key] = $value;
                     }
                 }
             }
@@ -253,7 +254,7 @@ class Delegados extends DataBase {
             $row = $result->fetch_assoc();
             if (!is_null($row)) {
                 foreach ($row as $key => $value) {
-                    $data[$key] = utf8_encode($value);
+                    $data[$key] = $value;
                 }
             }
             $result->free();
