@@ -163,6 +163,31 @@
         </table>
       </div>   
     </div>
-    
+    <div>
+        <table class="table table-bordered table-sm w-100 text-center">
+            <thead>
+                <tr>
+                <th>Oficiales</th>
+                <th>Fraternales</th>
+                <th>Visitas</th>
+                <th>Consejeros y Superintendentes</th>
+                <th>Representantes de Uniones</th>
+                <th>Personal del R. Presbiterio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td><div id="resumen-Oficiales" class="text-secondary small"></div></td>
+                <td><div id="resumen-Fraternales" class="text-secondary small"></div></td>
+                <td><div id="resumen-Visitas" class="text-secondary small"></div></td>
+                <td><div id="resumen-Consejeros" class="text-secondary small"></div></td>
+                <td><div id="resumen-RepresentantesU" class="text-secondary small"></div></td>
+                <td><div id="resumen-PersonalRP" class="text-secondary small"></div></td>
+                </tr>
+            </tbody>
+            </table>
+
+    </div>
+
   </div>
 </div>

@@ -7,7 +7,9 @@ $(document).ready(function(){
     //$('#description').val(JsonString);
     $('#delegado-result').hide();
     $('#lista-nombres').hide();
-                    
+        
+     
+                
 
     const paginaActual = $('body').data('pagina'); // Usa un atributo 'data-pagina' en tu HTML
 
@@ -15,16 +17,19 @@ $(document).ready(function(){
         $('#search').show();
         $('#boton-buscar').show();
         listarDelegados();
+        setInterval(listarDelegados, 3000);
     }
     if (paginaActual === 'listaOriginal') {
         $('#search').hide();
         $('#boton-buscar').hide();
         listaDelegados();
+        setInterval(listaDelegados, 3000);
     }
     if (paginaActual === 'listaActa') {
         $('#search').hide();
         $('#boton-buscar').hide();
         listaDelegadosActa();
+        setInterval(listaDelegadosActa, 3000); 
     }
     if (paginaActual === 'pasedelista') {
         $('#search').hide();
@@ -58,9 +63,10 @@ $(document).ready(function(){
                         template += `
                             <tr delegadoID="${delegado.id}">
                                 <td>${delegado.id}</td>
+                                <td>${delegado.tipodelegado}</td>
                                 <td>${delegado.nombre}</td>
                                 <td>${descripcion}</td>
-                                <td>${delegado.tipodelegado}</td>
+                                
                             </tr>
                         `;
                     });
@@ -71,6 +77,8 @@ $(document).ready(function(){
         });
     }
 
+
+    /*
     function listaDelegados() {
         let contador = 0;
         $.ajax({
@@ -109,7 +117,75 @@ $(document).ready(function(){
                 }
             }
         });
+    }*/
+
+
+    function listaDelegados() {
+        let resumenPorTipo = {}; // Para agrupar por tipo de delegado
+        let totalCuotas = 0;
+
+        $.ajax({
+            url: './backend/delegados-list.php',
+            type: 'GET',
+            success: function(response) {
+                const delegados = JSON.parse(response);
+
+                if (Object.keys(delegados).length > 0) {
+                    let template = '';
+
+                    delegados.forEach(delegado => {
+                        // Sumar total general
+                        totalCuotas += parseFloat(delegado.cuota);
+
+                        // Agrupar por tipo de delegado
+                        if (!resumenPorTipo[delegado.tipodelegado]) {
+                            resumenPorTipo[delegado.tipodelegado] = {
+                                cantidad: 0,
+                                cuotas: 0
+                            };
+                        }
+
+                        resumenPorTipo[delegado.tipodelegado].cantidad++;
+                        resumenPorTipo[delegado.tipodelegado].cuotas += parseFloat(delegado.cuota);
+
+                        let descripcion = `${delegado.categoria}, ${delegado.sociedad}, ${delegado.iglesia}, ${delegado.domicilio}`;
+
+                        template += `
+                            <tr delegadoID="${delegado.id}">
+                                <td>${delegado.id}</td>
+                                <td>${delegado.tipodelegado}</td>
+                                <td>${delegado.nombre}</td>
+                                <td>${descripcion}</td>
+                                
+                                <td>${delegado.cuota}</td>
+                            </tr>
+                        `;
+                    });
+
+                    $('#delegados').html(template);
+
+                    // Construir resumen
+                    let resumenHTML = '<div class="mt-4"><h5>Resumen por tipo de delegado</h5><ul class="list-group">';
+                    for (const tipo in resumenPorTipo) {
+                        const data = resumenPorTipo[tipo];
+                        resumenHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${tipo}
+                            <span>${data.cantidad} delegados - Cuotas: $${data.cuotas.toFixed(2)}</span>
+                        </li>`;
+                    }
+                    resumenHTML += `<li class="list-group-item active d-flex justify-content-between align-items-center">
+                        Total General
+                        <span>Cuotas: $${totalCuotas.toFixed(2)}</span>
+                    </li>`;
+                    resumenHTML += '</ul></div>';
+
+                    // Mostrar resumen debajo de la tabla
+                    $('#resumenDelegados').html(resumenHTML);
+                }
+            }
+        });
     }
+
 
     function pasedelista() {
         $.ajax({
@@ -122,18 +198,19 @@ $(document).ready(function(){
                 // SE VERIFICA SI EL OBJETO JSON TIENE DATOS
                 if(Object.keys(delegados).length > 0) {
                     // SE CREA UNA PLANTILLA PARA CREAR LAS FILAS A INSERTAR EN EL DOCUMENTO HTML
+                   /*
                     let templateOriginal = '';
                     let templateOficiales = '';
                     let templateFraternales = '';
                     let templateVisitas = '';
                     let templateConsejeros = '';
                     let templateRepresentantesU = '';
-                    let templatePersonalRP = '';
+                    let templatePersonalRP = '';*/
 
                     delegados.forEach(delegado => {
                         console.log(delegado);
                         // SE CREA UNA LISTA HTML CON LA DESCRIPCIÓN DEL PRODUCTO
-                        let descripcion = '';
+                       /* let descripcion = '';
                         descripcion += ''+delegado.categoria+'  ';
                         descripcion += ',  '+delegado.sociedad+'  ';
                         descripcion += ',  '+delegado.iglesia+'  ';
@@ -152,35 +229,106 @@ $(document).ready(function(){
                                 <td> </td>
                                 <td> </td>
                             </tr>
-                        `;
+                        `;*/
 
                         if (delegado.tipodelegado === "Oficial"){
-                            templateOficiales += templateOriginal;
+                            //templateOficiales += templateOriginal;
+                            agregarDelegadoATabla('Oficiales', delegado);
                         }else if( delegado.tipodelegado === "Fraternal"){
-                            templateFraternales += templateOriginal;
+                            //templateFraternales += templateOriginal;
+                            agregarDelegadoATabla('Fraternales', delegado);
                         }else if (delegado.tipodelegado === "Visita"){
-                            templateVisitas += templateOriginal;
+                            //templateVisitas += templateOriginal;
+                            agregarDelegadoATabla('Visitas', delegado);
                         }else if (delegado.tipodelegado === "Consejeros y Superintendentes"){
-                            templateConsejeros += templateOriginal;
+                            //templateConsejeros += templateOriginal;
+                            agregarDelegadoATabla('Consejeros', delegado);
                         }else if (delegado.tipodelegado === "Representantes de Uniones"){
-                            templateRepresentantesU += templateOriginal;
+                            //templateRepresentantesU += templateOriginal;
+                            agregarDelegadoATabla('RepresentantesU', delegado);
                         }else{
-                            templatePersonalRP += templateOriginal;
+                            //templatePersonalRP += templateOriginal;
+                            agregarDelegadoATabla('PersonalRP', delegado);
                         }
 
-                        templateOriginal = '';
+                        //templateOriginal = '';
                     });
                     // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "productos"
+                    /*
                     $('#Oficiales').html(templateOficiales);
                     $('#Fraternales').html(templateFraternales);
                     $('#Visitas').html(templateVisitas);
                     $('#Consejeros').html(templateConsejeros);
                     $('#RepresentantesU').html(templateRepresentantesU);
-                    $('#PersonalRP').html(templatePersonalRP);
+                    $('#PersonalRP').html(templatePersonalRP);*/
                 }
             }
         });
     }
+
+    function agregarDelegadoATabla(tablaId, delegado) {
+        const tbody = document.getElementById(tablaId);
+        const fila = document.createElement('tr');
+
+        let descripcion = '';
+            descripcion += ''+delegado.categoria+'  ';
+            descripcion += ',  '+delegado.sociedad+'  ';
+            descripcion += ',  '+delegado.iglesia+'  ';
+            descripcion += ',  '+delegado.domicilio+'';
+
+        let selects = '';
+        for (let i = 1; i <= 6; i++) {
+            selects += `
+            <td>
+                <select class="form-select form-select-sm asistencia" 
+                        data-sesion="${i}" 
+                        data-tabla="${tablaId}">
+                <option value="">-</option>
+                <option value="presente">✓</option>
+                <option value="ausente">×</option>
+                </select>
+            </td>`;
+        }
+
+        fila.innerHTML = `
+            <td>${delegado.id}</td>
+            <td>${delegado.nombre}</td>
+            <td>${descripcion}</td>
+            ${selects}
+            <td></td> <!-- columna extra si la necesitas -->
+        `;
+        tbody.appendChild(fila);
+        }
+
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('asistencia')) {
+            const tablaId = e.target.dataset.tabla;
+            actualizarResumenPorTabla(tablaId);
+        }
+        });
+
+        function actualizarResumenPorTabla(tablaId) {
+        const resumen = {};
+        for (let sesion = 1; sesion <= 6; sesion++) {
+            resumen[sesion] = { presentes: 0, total: 0 };
+        }
+
+        document.querySelectorAll(`#${tablaId} .asistencia`).forEach(select => {
+            const sesion = select.dataset.sesion;
+            resumen[sesion].total += 1;
+            if (select.value === 'presente') {
+            resumen[sesion].presentes += 1;
+            }
+        });
+
+        // Mostrar resumen
+        const resumenDiv = document.getElementById(`resumen-${tablaId}`);
+        resumenDiv.innerHTML = '<strong>Resumen por sesión:</strong><br>' +
+            Object.entries(resumen).map(([num, data]) => {
+            return `Sesión ${num}: ${data.presentes} / ${data.total}`;
+            }).join('<br>');
+        }
+
 
     function listarDelegados() {
         $.ajax({
@@ -224,12 +372,12 @@ $(document).ready(function(){
         });
     }
 
-    $('#name').on('keyup', function() {
-        if($('#name').val()) {
+    $('#name').on('keyup', function () {
+        if ($('#name').val()) {
             let search = $('#name').val();
             $.ajax({
-                url: './backend/delegados-search_miembros_ec.php?name='+$('#name').val(),
-                data: {search},
+                url: './backend/delegados-search_miembros_ec.php?name=' + encodeURIComponent(search),
+                data: { search },
                 type: 'GET',
                 success: function (response) {
                     try {
@@ -238,7 +386,13 @@ $(document).ready(function(){
                         if (delegados.length > 0) {
                             let nombres = '';
                             delegados.forEach(delegado => {
-                                nombres += `<div class='opcion-nombre'>${delegado.nombre}, ${delegado.categoria} ${delegado.sociedad}, ${delegado.iglesia} ${delegado.domicilio}</div>`;
+                                nombres += `
+                                    <div class="opcion-nombre" data-nombre="${delegado.nombre}">
+                                        <strong>${delegado.nombre}</strong><br>
+                                        <small>${delegado.categoria} | "${delegado.sociedad}", ${delegado.iglesia}</small><br>
+                                        <small>${delegado.domicilio}</small>
+                                    </div>
+                                `;
                             });
                             $('#lista-nombres').html(nombres).show();
                         } else {
@@ -254,37 +408,98 @@ $(document).ready(function(){
                     $('#lista-nombres').hide();
                 }
             });
-        }
-        else{
+        } else {
             $('#lista-nombres').hide();
         }
+    });
 
-        $(document).on('click', '.opcion-nombre', function(){
+    // ⬇️ Mueve esta parte fuera del `keyup` para evitar múltiples bindings
+    $(document).on('click', '.opcion-nombre', function () {
+        let nombreSeleccionado = $(this).data('nombre');
+        $('#name').val(nombreSeleccionado);
+        $('#lista-nombres').hide();
 
-            let nombreSeleccionado = $(this).text().trim();
-            console.log(nombreSeleccionado)
-            $('#name').val(nombreSeleccionado);
-            $('#lista-nombres').hide();
-        
-            $.post('./backend/delegados-miembros_ec.php', {nombreSeleccionado}, (response) => {
-                console.log(response)
-                // SE CONVIERTE A OBJETO EL JSON OBTENIDO
+        $.post('./backend/delegados-miembros_ec.php', { nombreSeleccionado }, (response) => {
+            try {
                 let delegado = JSON.parse(response);
-                // SE INSERTAN LOS DATOS ESPECIALES EN LOS CAMPOS CORRESPONDIENTES
                 $('#name').val(delegado.nombre);
-                // EL ID SE INSERTA EN UN CAMPO OCULTO PARA USARLO DESPUÉS PARA LA ACTUALIZACIÓN
                 $('#delegadoID').val(delegado.id);
-                // SE ELIMINA nombre, eliminado E id PARA PODER MOSTRAR EL JSON EN EL <textarea>
                 $('#categoria').val(delegado.categoria);
                 $('#sociedad').val(delegado.sociedad);
                 $('#iglesia').val(delegado.iglesia);
                 $('#domicilio').val(delegado.domicilio);
                 $('#tipodelegado').val(delegado.tipodelegado);
                 $('#cuota').val(delegado.cuota);
-            });
+            } catch (e) {
+                console.error("Error al parsear respuesta del delegado:", response);
+            }
         });
     });
-    
+
+    $('#sociedad').on('keyup', function () {
+        
+        if ($('#sociedad').val()) {
+            
+            let search = $('#sociedad').val();
+            $.ajax({
+                url: './backend/delegados-search_sociedades.php?sociedad=' + encodeURIComponent(search),
+                data: { search },
+                type: 'GET',
+                success: function (response) {
+                    try {
+                        const sociedades = JSON.parse(response);
+
+                        if (sociedades.length > 0) {
+                            let nombres = '';
+                            sociedades.forEach(sociedad => {
+                                nombres += `
+                                    <div class="opcion-sociedad" data-sociedad="${sociedad.sociedad}">
+                                        <strong>${sociedad.sociedad}</strong><br>
+                                        <small>${sociedad.categoria} | ${sociedad.iglesia}</small><br>
+                                        <small>${sociedad.domicilio}</small>
+                                    </div>
+                                `;
+                            });
+                            $('#lista-sociedades').html(nombres).show();
+                        } else {
+                            $('#lista-sociedades').hide();
+                        }
+                    } catch (e) {
+                        console.error("Respuesta no es JSON válido:", response);
+                        $('#lista-sociedades').hide();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error AJAX:", error);
+                    $('#lista-sociedades').hide();
+                }
+            });
+        } else {
+            $('#lista-sociedades').hide();
+        }
+    });
+
+    // ⬇️ Mueve esta parte fuera del `keyup` para evitar múltiples bindings
+    $(document).on('click', '.opcion-sociedad', function () {
+        let nombresociedad = $(this).data('sociedad');
+        $('#sociedad').val(nombresociedad);
+        $('#lista-sociedades').hide();
+        console.log(nombresociedad);
+        $.post('./backend/delegados-sociedades.php', { nombresociedad }, (response) => {
+            try {
+                let sociedad = JSON.parse(response);
+                $('#categoria').val(sociedad.categoria);
+                $('#sociedad').val(sociedad.sociedad);
+                $('#iglesia').val(sociedad.iglesia);
+                $('#domicilio').val(sociedad.domicilio);
+                $('#tipodelegado').val(sociedad.tipodelegado);
+                $('#cuota').val(sociedad.cuota);
+            } catch (e) {
+                console.error("Error al parsear respuesta del delegado:", e);
+                console.log("Respuesta recibida:", response);
+            }
+        });
+    });
 
     $('#search').keyup(function() {
         if($('#search').val()) {0
@@ -397,7 +612,7 @@ $(document).ready(function(){
         let categoria = $(this).val();
         console.log(categoria);
         if (categoria === "SInfEC" || categoria === "GInfEC" ){
-            $('#cuota').val(350);
+            $('#cuota').val(250);
         }else if (categoria === ""){
             $('#cuota').val(0);
         }
@@ -406,19 +621,24 @@ $(document).ready(function(){
     $('#tipodelegado').on('change', function(){
         let tipodelegado = $(this).val();
         let categoria = $('#categoria').val();
-        if ((tipodelegado === "Fraternal" || tipodelegado === "Oficial" || tipodelegado === "Visita") && 
+        if ((tipodelegado === "Fraternal" || tipodelegado === "Visita") && 
+            (categoria === "SInfEC" || categoria === "GInfEC")) {
+            
+            $('#cuota').val(250);
+
+        } else if ((tipodelegado === "Oficial") && 
             (categoria === "SInfEC" || categoria === "GInfEC")) {
             
             $('#cuota').val(225);
 
-        } else if (tipodelegado === "Fraternal" || tipodelegado === "Consejeros y Superintendentes") {
+        }else if (tipodelegado === "Fraternal" || tipodelegado === "Consejeros y Superintendentes") {
             $('#cuota').val(500);
 
         } else if (tipodelegado === "Oficial") {
             $('#cuota').val(450);
 
         } else if (tipodelegado === "Visita") {
-            $('#cuota').val(650);
+            $('#cuota').val(500);
 
         } else {
             $('#cuota').val(0);

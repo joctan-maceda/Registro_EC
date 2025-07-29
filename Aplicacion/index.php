@@ -8,12 +8,23 @@
               <!-- FORMULARIO PARA AGREGAR PRODUCTO -->
               <form id="delegado-form">
                 <div class="form-group">
+                  <select id="tipodelegado" name="tipodelegado">
+                    <option value="">Selecciona una categoria</option>
+                    <option value="Oficial">Oficial</option>
+                    <option value="Fraternal">Fraternal</option>
+                    <option value="Visita">Visita</option>
+                    <option value="Consejeros y Superintendentes">Consejeros y Superintendentes</option>
+                    <option value="Representantes de Uniones">Representantes de Uniones</option>
+                    <option value="Personal del Presbiterio">Personal del Presbiterio</option>                 
+                  </select>
+                </div>
+                <div class="form-group">
                   <input class="form-control" type="text" id="name" placeholder="Nombre completo" required>
                   <div id="lista-nombres"></div><br>
                   <div id="estado-nombre" style="display: none;"></div>
                 </div>
                 <div class="form-group">
-                  <select class="delegado-categoria" id="categoria" name="categoria">
+                  <select class="delegado-categoria" id="categoria" name="categoria" disabled>
                     <option class='delegado-categoria' value="">Selecciona una categoria</option>
                     <option class='delegado-categoria' value="SAEC">SAEC</option>
                     <option class='delegado-categoria' value="SJEC">SJEC</option>
@@ -28,28 +39,19 @@
                   </select>
                 </div>
                 <div class="form-group">
-                  <input class="form-control" type="text" id="sociedad" placeholder="Nombre de la sociedad" required>
+                  <input class="form-control" type="text" id="sociedad" placeholder="Nombre de la sociedad" >
+                  <div id="lista-sociedades"></div><br>
                   <div id="estado-sociedad" style="display: none;"></div>
                 </div>
                 <div class="form-group">
-                  <input class="form-control" type="text" id="iglesia" placeholder="Tipo y nombre de la Iglesia" required>
+                  <input class="form-control" type="text" id="iglesia" placeholder="Tipo y nombre de la Iglesia" >
                   <div id="estado-iglesia" style="display: none;"></div>
                 </div>
                 <div class="form-group">
-                  <textarea class="form-control" id="domicilio" cols="20" rows="10" placeholder="Domicilio de la Iglesia" required></textarea>
+                  <textarea class="form-control" id="domicilio" cols="20" rows="10" placeholder="Domicilio de la Iglesia" ></textarea>
                   <div id="estado-domicilio" style="display: none;"></div>
                 </div>
-                <div class="form-group">
-                  <select id="tipodelegado" name="tipodelegado">
-                    <option value="">Selecciona una categoria</option>
-                    <option value="Oficial">Oficial</option>
-                    <option value="Fraternal">Fraternal</option>
-                    <option value="Visita">Visita</option>
-                    <option value="Consejeros y Superintendentes">Consejeros y Superintendentes</option>
-                    <option value="Representantes de Uniones">Representantes de Uniones</option>
-                    <option value="Personal del Presbiterio">Personal del Presbiterio</option>                 
-                  </select>
-                </div>
+                
                 <div class="form-group">
                   <input class="form-control" type="text" id="cuota" placeholder="Monto" required>
                   <div id="estado-cuota" style="display: none;"></div>

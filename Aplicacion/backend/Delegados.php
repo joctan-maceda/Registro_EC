@@ -78,7 +78,7 @@ class Delegados extends DataBase {
             if (is_object($result) && $result->num_rows == 0) {
                 $this->conexion->set_charset("utf8");
 
-                $sql = "INSERT INTO delegados VALUES (null, '{$delegadoData->nombre}', '{$delegadoData->categoria}', '{$delegadoData->sociedad}', '{$delegadoData->iglesia}', '{$delegadoData->domicilio}', '{$delegadoData->tipodelegado}',{$delegadoData->cuota}, 0)";
+                $sql = "INSERT INTO delegados VALUES (null, '{$delegadoData->nombre}', '{$delegadoData->categoria}', '{$delegadoData->sociedad}', '{$delegadoData->iglesia}', '{$delegadoData->domicilio}', '{$delegadoData->tipodelegado}',{$delegadoData->cuota}, 0,0)";
                 
                 if ($this->query($sql)) {
                     $data['status'] = "success";
@@ -245,10 +245,76 @@ class Delegados extends DataBase {
         // Almacena el resultado en response para luego poder usar getData()
         $this->response = $data;
     }
+
+    public function search_sociedades($search) {
+        $data = array();
+
+        // Prepara la consulta con un placeholder (?)
+        $stmt = $this->conexion->prepare("SELECT * FROM sociedades WHERE sociedad LIKE CONCAT('%', ?, '%')");
+
+        if ($stmt === false) {
+            die('Error al preparar la consulta: ' . $this->conexion->error);
+        }
+
+        // Une el parámetro a la consulta
+        $stmt->bind_param("s", $search);
+
+        // Ejecuta la consulta
+        if (!$stmt->execute()) {
+            die('Error al ejecutar la consulta: ' . $stmt->error);
+        }
+
+        // Obtiene el resultado
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+
+            if (!is_null($rows)) {
+                foreach ($rows as $num => $row) {
+                    foreach ($row as $key => $value) {
+                        $data[$num][$key] = $value;
+                    }
+                }
+            }
+            $result->free();
+        } else {
+            // Podrías no morir aquí, sino retornar array vacío
+            // die('Error en la consulta: ' . $this->conexion->error);
+            $data = [];
+        }
+
+        // Almacena la respuesta
+        $this->response = $data;
+
+        // Cierra el statement
+        $stmt->close();
+    }
+
     
     public function miembros_ec($nombreSeleccionado){
         $data = array();
         $sql = "SELECT * FROM miembros_ec WHERE nombre = '{$nombreSeleccionado}' ";
+        $result = $this->query($sql);
+        if (is_object($result) && $result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            if (!is_null($row)) {
+                foreach ($row as $key => $value) {
+                    $data[$key] = $value;
+                }
+            }
+            $result->free();
+        } else {
+            die('Error en la consulta: ' . mysqli_error($this->conexion));
+        }
+
+        // Almacena los datos obtenidos en la propiedad response
+        $this->response = $data;
+    }
+
+    public function sociedades($nombreSeleccionado){
+        $data = array();
+        $sql = "SELECT * FROM sociedades WHERE sociedad = '{$nombreSeleccionado}' ";
         $result = $this->query($sql);
         if (is_object($result) && $result->num_rows > 0) {
             $row = $result->fetch_assoc();

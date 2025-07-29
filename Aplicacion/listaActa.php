@@ -19,9 +19,10 @@
           <thead class="table-dark">
             <tr>
               <th>Num. Lista</th>
+              <th>Tipo Delegado</th>
               <th>Nombre</th>
               <th>Descripción</th>
-              <th>Tipo Delegado</th>
+              
             </tr>
           </thead>
           <tbody id="delegados"></tbody>
