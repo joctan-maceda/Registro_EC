@@ -1,30 +1,5 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta lang="es">
-    <meta charset="UTF-8">
-    <title>ProductApp</title>
-    <!-- BOOTSTRAP 4  -->
-    <link rel="stylesheet" href="https://bootswatch.com/4/superhero/bootstrap.min.css">
-  </head>
-  <body>
-
-    <!-- BARRA DE NAVEGACIÓN  -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href=".">Registro Convención</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ml-auto"></ul>
-          <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" name="search" id="search" type="search" placeholder="ID, marca o descripción" aria-label="Search">
-            <button class="btn btn-success my-2 my-sm-0" type="submit">Buscar</button>
-          </form>
-      </div>
-    </nav>
-
+<body data-pagina="index">
+<?php include 'header.php'; ?>
     <div class="container">
       <div class="row p-4">
         <div class="col-md-5">
@@ -110,12 +85,4 @@
         </div>
       </div>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-      crossorigin="anonymous"></script>
-    <!-- Lógica del Frontend -->
-    <script src="app.js"></script>
   </body>
-
-</html>

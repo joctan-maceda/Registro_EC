@@ -8,7 +8,179 @@ $(document).ready(function(){
     $('#delegado-result').hide();
     $('#lista-nombres').hide();
                     
-    listarDelegados();
+
+    const paginaActual = $('body').data('pagina'); // Usa un atributo 'data-pagina' en tu HTML
+
+    if (paginaActual === 'index') {
+        $('#search').show();
+        $('#boton-buscar').show();
+        listarDelegados();
+    }
+    if (paginaActual === 'listaOriginal') {
+        $('#search').hide();
+        $('#boton-buscar').hide();
+        listaDelegados();
+    }
+    if (paginaActual === 'listaActa') {
+        $('#search').hide();
+        $('#boton-buscar').hide();
+        listaDelegadosActa();
+    }
+    if (paginaActual === 'pasedelista') {
+        $('#search').hide();
+        $('#boton-buscar').hide();
+        pasedelista();
+    }
+
+    function listaDelegadosActa() {
+        let contador = 0;
+        $.ajax({
+            url: './backend/delegados-list.php',
+            type: 'GET',
+            success: function(response) {
+                // SE OBTIENE EL OBJETO DE DATOS A PARTIR DE UN STRING JSON
+                const delegados = JSON.parse(response);
+            
+                // SE VERIFICA SI EL OBJETO JSON TIENE DATOS
+                if(Object.keys(delegados).length > 0) {
+                    // SE CREA UNA PLANTILLA PARA CREAR LAS FILAS A INSERTAR EN EL DOCUMENTO HTML
+                    let template = '';
+
+                    delegados.forEach(delegado => {
+                        contador += delegado.cuota;
+                        // SE CREA UNA LISTA HTML CON LA DESCRIPCIÓN DEL PRODUCTO
+                        let descripcion = '';
+                        descripcion += ''+delegado.categoria+"      ";
+                        descripcion += "     "+delegado.sociedad+"     ";
+                        descripcion += ",    "+delegado.iglesia+"     ";
+                        descripcion += ",   "+delegado.domicilio+'';
+                    
+                        template += `
+                            <tr delegadoID="${delegado.id}">
+                                <td>${delegado.id}</td>
+                                <td>${delegado.nombre}</td>
+                                <td>${descripcion}</td>
+                                <td>${delegado.tipodelegado}</td>
+                            </tr>
+                        `;
+                    });
+                    // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "productos"
+                    $('#delegados').html(template);
+                }
+            }
+        });
+    }
+
+    function listaDelegados() {
+        let contador = 0;
+        $.ajax({
+            url: './backend/delegados-list.php',
+            type: 'GET',
+            success: function(response) {
+                // SE OBTIENE EL OBJETO DE DATOS A PARTIR DE UN STRING JSON
+                const delegados = JSON.parse(response);
+            
+                // SE VERIFICA SI EL OBJETO JSON TIENE DATOS
+                if(Object.keys(delegados).length > 0) {
+                    // SE CREA UNA PLANTILLA PARA CREAR LAS FILAS A INSERTAR EN EL DOCUMENTO HTML
+                    let template = '';
+
+                    delegados.forEach(delegado => {
+                        contador += delegado.cuota;
+                        // SE CREA UNA LISTA HTML CON LA DESCRIPCIÓN DEL PRODUCTO
+                        let descripcion = '';
+                        descripcion += ''+delegado.categoria+'  ';
+                        descripcion += ',  '+delegado.sociedad+'  ';
+                        descripcion += ',  '+delegado.iglesia+'  ';
+                        descripcion += ',  '+delegado.domicilio+'';
+                    
+                        template += `
+                            <tr delegadoID="${delegado.id}">
+                                <td>${delegado.id}</td>
+                                <td>${delegado.nombre}</td>
+                                <td>${descripcion}</td>
+                                <td>${delegado.tipodelegado}</td>
+                                <td>${delegado.cuota}</td>
+                            </tr>
+                        `;
+                    });
+                    // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "productos"
+                    $('#delegados').html(template);
+                }
+            }
+        });
+    }
+
+    function pasedelista() {
+        $.ajax({
+            url: './backend/delegados-list.php',
+            type: 'GET',
+            success: function(response) {
+                // SE OBTIENE EL OBJETO DE DATOS A PARTIR DE UN STRING JSON
+                const delegados = JSON.parse(response);
+            
+                // SE VERIFICA SI EL OBJETO JSON TIENE DATOS
+                if(Object.keys(delegados).length > 0) {
+                    // SE CREA UNA PLANTILLA PARA CREAR LAS FILAS A INSERTAR EN EL DOCUMENTO HTML
+                    let templateOriginal = '';
+                    let templateOficiales = '';
+                    let templateFraternales = '';
+                    let templateVisitas = '';
+                    let templateConsejeros = '';
+                    let templateRepresentantesU = '';
+                    let templatePersonalRP = '';
+
+                    delegados.forEach(delegado => {
+                        console.log(delegado);
+                        // SE CREA UNA LISTA HTML CON LA DESCRIPCIÓN DEL PRODUCTO
+                        let descripcion = '';
+                        descripcion += ''+delegado.categoria+'  ';
+                        descripcion += ',  '+delegado.sociedad+'  ';
+                        descripcion += ',  '+delegado.iglesia+'  ';
+                        descripcion += ',  '+delegado.domicilio+'';
+                    
+                        templateOriginal += `
+                            <tr delegadoID="${delegado.id}">
+                                <td>${delegado.id}</td>
+                                <td>${delegado.nombre}</td>
+                                <td>${descripcion}</td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                            </tr>
+                        `;
+
+                        if (delegado.tipodelegado === "Oficial"){
+                            templateOficiales += templateOriginal;
+                        }else if( delegado.tipodelegado === "Fraternal"){
+                            templateFraternales += templateOriginal;
+                        }else if (delegado.tipodelegado === "Visita"){
+                            templateVisitas += templateOriginal;
+                        }else if (delegado.tipodelegado === "Consejeros y Superintendentes"){
+                            templateConsejeros += templateOriginal;
+                        }else if (delegado.tipodelegado === "Representantes de Uniones"){
+                            templateRepresentantesU += templateOriginal;
+                        }else{
+                            templatePersonalRP += templateOriginal;
+                        }
+
+                        templateOriginal = '';
+                    });
+                    // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "productos"
+                    $('#Oficiales').html(templateOficiales);
+                    $('#Fraternales').html(templateFraternales);
+                    $('#Visitas').html(templateVisitas);
+                    $('#Consejeros').html(templateConsejeros);
+                    $('#RepresentantesU').html(templateRepresentantesU);
+                    $('#PersonalRP').html(templatePersonalRP);
+                }
+            }
+        });
+    }
 
     function listarDelegados() {
         $.ajax({
@@ -60,19 +232,26 @@ $(document).ready(function(){
                 data: {search},
                 type: 'GET',
                 success: function (response) {
-                    console.log(response);
-                    if(!response.error) {
-                        // SE OBTIENE EL OBJETO DE DATOS A PARTIR DE UN STRING JSON
+                    try {
                         const delegados = JSON.parse(response);
-                        // SE VERIFICA SI EL OBJETO JSON TIENE DATOS
-                        if(Object.keys(delegados).length > 0) {
-                             let nombres = '';
+
+                        if (delegados.length > 0) {
+                            let nombres = '';
                             delegados.forEach(delegado => {
-                                nombres += "<div class='opcion-nombre'>"+ delegado.nombre + "</div>";
+                                nombres += `<div class='opcion-nombre'>${delegado.nombre}, ${delegado.categoria} ${delegado.sociedad}, ${delegado.iglesia} ${delegado.domicilio}</div>`;
                             });
                             $('#lista-nombres').html(nombres).show();
+                        } else {
+                            $('#lista-nombres').hide();
                         }
+                    } catch (e) {
+                        console.error("Respuesta no es JSON válido:", response);
+                        $('#lista-nombres').hide();
                     }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error AJAX:", error);
+                    $('#lista-nombres').hide();
                 }
             });
         }
