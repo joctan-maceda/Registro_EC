@@ -1,0 +1,20 @@
+#lista-nombres {
+    border: 1px solid #ccc;
+    max-height: 300px;
+    overflow-y: auto;
+    position: absolute;
+    background-color: rgba(250, 246, 246, 1);
+    width: 500px;
+    z-index: 100;
+  }
+  #lista-nombres div {
+    padding: 5px;
+    cursor: pointer;
+  }
+  #lista-nombres div:hover {
+    background-color: rgb(70, 72, 202);
+  }
+
+ body {
+    padding-top: 70px; /* para que el contenido no quede debajo del navbar fijo */
+  }

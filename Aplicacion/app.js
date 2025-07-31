@@ -1,23 +1,31 @@
 
-
+// CUANDO INICIA LA PANTALLA
 $(document).ready(function(){
     let edit = false;
-
-    //let JsonString = JSON.stringify(baseJSON,null,2);
-    //$('#description').val(JsonString);
     $('#delegado-result').hide();
     $('#lista-nombres').hide();
-        
-     
-                
+                        
+// VERIFICAMOS EN PÁGINA ESTAMOS ACTUALMENTE
+    const paginaActual = $('body').data('pagina'); 
 
-    const paginaActual = $('body').data('pagina'); // Usa un atributo 'data-pagina' en tu HTML
-
+// VERIFICACIÓN DE CADA PÁGINA, PARA OCULTAR ELEMENTOS, DEPENDIENDO LA PÁGINA
     if (paginaActual === 'index') {
         $('#search').show();
         $('#boton-buscar').show();
         listarDelegados();
-        setInterval(listarDelegados, 3000);
+        // Verifica si el div delegado result esta visible o no
+        // En caso de que este visible signfica que alguien esta buscando algo, por lo que no se recarga la pagina
+        // En caso contrario, se estara recargando la pagina cada 3 segundos
+        setInterval(() => {
+            const display = $('#delegado-result').is(':visible');
+            if (display === false) {
+                console.log("Oculto, recargando...");
+                listarDelegados();
+            } else {
+                console.log("Visible, no se recarga.");
+            }
+        }, 3000);
+        
     }
     if (paginaActual === 'listaOriginal') {
         $('#search').hide();
@@ -35,7 +43,12 @@ $(document).ready(function(){
         $('#search').hide();
         $('#boton-buscar').hide();
         pasedelista();
+        //setInterval(pasedelista, 3000);
     }
+
+    ///////////////////////////////////////////////////////////
+    ///////////////// PÁGINA listaActa.php ////////////////////
+    ///////////////////////////////////////////////////////////
 
     function listaDelegadosActa() {
         let contador = 0;
@@ -45,7 +58,6 @@ $(document).ready(function(){
             success: function(response) {
                 // SE OBTIENE EL OBJETO DE DATOS A PARTIR DE UN STRING JSON
                 const delegados = JSON.parse(response);
-            
                 // SE VERIFICA SI EL OBJETO JSON TIENE DATOS
                 if(Object.keys(delegados).length > 0) {
                     // SE CREA UNA PLANTILLA PARA CREAR LAS FILAS A INSERTAR EN EL DOCUMENTO HTML
@@ -70,59 +82,23 @@ $(document).ready(function(){
                             </tr>
                         `;
                     });
-                    // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "productos"
+                    // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "delegados"
                     $('#delegados').html(template);
                 }
             }
         });
     }
 
-
-    /*
-    function listaDelegados() {
-        let contador = 0;
-        $.ajax({
-            url: './backend/delegados-list.php',
-            type: 'GET',
-            success: function(response) {
-                // SE OBTIENE EL OBJETO DE DATOS A PARTIR DE UN STRING JSON
-                const delegados = JSON.parse(response);
-            
-                // SE VERIFICA SI EL OBJETO JSON TIENE DATOS
-                if(Object.keys(delegados).length > 0) {
-                    // SE CREA UNA PLANTILLA PARA CREAR LAS FILAS A INSERTAR EN EL DOCUMENTO HTML
-                    let template = '';
-
-                    delegados.forEach(delegado => {
-                        contador += delegado.cuota;
-                        // SE CREA UNA LISTA HTML CON LA DESCRIPCIÓN DEL PRODUCTO
-                        let descripcion = '';
-                        descripcion += ''+delegado.categoria+'  ';
-                        descripcion += ',  '+delegado.sociedad+'  ';
-                        descripcion += ',  '+delegado.iglesia+'  ';
-                        descripcion += ',  '+delegado.domicilio+'';
-                    
-                        template += `
-                            <tr delegadoID="${delegado.id}">
-                                <td>${delegado.id}</td>
-                                <td>${delegado.nombre}</td>
-                                <td>${descripcion}</td>
-                                <td>${delegado.tipodelegado}</td>
-                                <td>${delegado.cuota}</td>
-                            </tr>
-                        `;
-                    });
-                    // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "productos"
-                    $('#delegados').html(template);
-                }
-            }
-        });
-    }*/
-
+    ///////////////////////////////////////////////////////////
+    ///////////////// PÁGINA listaOriginal.php ////////////////
+    ///////////////////////////////////////////////////////////
 
     function listaDelegados() {
         let resumenPorTipo = {}; // Para agrupar por tipo de delegado
         let totalCuotas = 0;
+        let totalDelegados = 0;
+        let sociedadesUnicas = new Set();
+        let gruposUnicos = new Set();
 
         $.ajax({
             url: './backend/delegados-list.php',
@@ -132,12 +108,10 @@ $(document).ready(function(){
 
                 if (Object.keys(delegados).length > 0) {
                     let template = '';
-
                     delegados.forEach(delegado => {
-                        // Sumar total general
+                        totalDelegados++; // Contador de delegados
                         totalCuotas += parseFloat(delegado.cuota);
-
-                        // Agrupar por tipo de delegado
+                        // Agrupación por tipo de delegado
                         if (!resumenPorTipo[delegado.tipodelegado]) {
                             resumenPorTipo[delegado.tipodelegado] = {
                                 cantidad: 0,
@@ -145,10 +119,15 @@ $(document).ready(function(){
                             };
                         }
 
+                        if (delegado.categoria === "SAEC" || delegado.categoria === "SJEC" || delegado.categoria === "SInfEC" || delegado.categoria === "SIEC" || delegado.categoria === "SMEC" ){
+                            sociedadesUnicas.add(delegado.categoria + " " +delegado.sociedad);
+                        }else{
+                            gruposUnicos.add(delegado.categoria + " " +delegado.sociedad);
+                        }
+
                         resumenPorTipo[delegado.tipodelegado].cantidad++;
                         resumenPorTipo[delegado.tipodelegado].cuotas += parseFloat(delegado.cuota);
-
-                        let descripcion = `${delegado.categoria}, ${delegado.sociedad}, ${delegado.iglesia}, ${delegado.domicilio}`;
+                        let descripcion = `${delegado.categoria} ${delegado.sociedad}, ${delegado.iglesia}, ${delegado.domicilio}`;
 
                         template += `
                             <tr delegadoID="${delegado.id}">
@@ -156,15 +135,14 @@ $(document).ready(function(){
                                 <td>${delegado.tipodelegado}</td>
                                 <td>${delegado.nombre}</td>
                                 <td>${descripcion}</td>
-                                
                                 <td>${delegado.cuota}</td>
                             </tr>
                         `;
                     });
-
                     $('#delegados').html(template);
 
-                    // Construir resumen
+                    // Construir resumen:
+                    // Se muestra un resumen para cada tipo de delegado, en donde viene el total de delegdos y el total de cuotas.
                     let resumenHTML = '<div class="mt-4"><h5>Resumen por tipo de delegado</h5><ul class="list-group">';
                     for (const tipo in resumenPorTipo) {
                         const data = resumenPorTipo[tipo];
@@ -173,123 +151,87 @@ $(document).ready(function(){
                             <span>${data.cantidad} delegados - Cuotas: $${data.cuotas.toFixed(2)}</span>
                         </li>`;
                     }
-                    resumenHTML += `<li class="list-group-item active d-flex justify-content-between align-items-center">
-                        Total General
-                        <span>Cuotas: $${totalCuotas.toFixed(2)}</span>
-                    </li>`;
+
+                    // Agrega resumen final
+                    resumenHTML += `
+                        <li class="list-group-item active d-flex justify-content-between align-items-center">
+                            Total General
+                            <span>${totalDelegados} delegados - Cuotas: $${totalCuotas.toFixed(2)}</span>
+                        </li>
+                        
+                        
+                    `;
+
                     resumenHTML += '</ul></div>';
 
                     // Mostrar resumen debajo de la tabla
                     $('#resumenDelegados').html(resumenHTML);
                 }
+                console.log(sociedadesUnicas);
+                console.log(gruposUnicos);
             }
         });
     }
 
 
+    ///////////////////////////////////////////////////////////
+    ///////////////// PÁGINA pasedelista.php ////////////////
+    ///////////////////////////////////////////////////////////
+
     function pasedelista() {
         $.ajax({
-            url: './backend/delegados-list.php',
+            url: './backend/delegados-lista-con-asistencia.php',
             type: 'GET',
             success: function(response) {
                 // SE OBTIENE EL OBJETO DE DATOS A PARTIR DE UN STRING JSON
                 const delegados = JSON.parse(response);
-            
+                console.log(delegados);
                 // SE VERIFICA SI EL OBJETO JSON TIENE DATOS
                 if(Object.keys(delegados).length > 0) {
-                    // SE CREA UNA PLANTILLA PARA CREAR LAS FILAS A INSERTAR EN EL DOCUMENTO HTML
-                   /*
-                    let templateOriginal = '';
-                    let templateOficiales = '';
-                    let templateFraternales = '';
-                    let templateVisitas = '';
-                    let templateConsejeros = '';
-                    let templateRepresentantesU = '';
-                    let templatePersonalRP = '';*/
-
+   
+                // Se hacen diferentes tablas, dependiendo el tipo de delegado.
                     delegados.forEach(delegado => {
-                        console.log(delegado);
-                        // SE CREA UNA LISTA HTML CON LA DESCRIPCIÓN DEL PRODUCTO
-                       /* let descripcion = '';
-                        descripcion += ''+delegado.categoria+'  ';
-                        descripcion += ',  '+delegado.sociedad+'  ';
-                        descripcion += ',  '+delegado.iglesia+'  ';
-                        descripcion += ',  '+delegado.domicilio+'';
-                    
-                        templateOriginal += `
-                            <tr delegadoID="${delegado.id}">
-                                <td>${delegado.id}</td>
-                                <td>${delegado.nombre}</td>
-                                <td>${descripcion}</td>
-                                <td> </td>
-                                <td> </td>
-                                <td> </td>
-                                <td> </td>
-                                <td> </td>
-                                <td> </td>
-                                <td> </td>
-                            </tr>
-                        `;*/
-
                         if (delegado.tipodelegado === "Oficial"){
-                            //templateOficiales += templateOriginal;
                             agregarDelegadoATabla('Oficiales', delegado);
                         }else if( delegado.tipodelegado === "Fraternal"){
-                            //templateFraternales += templateOriginal;
                             agregarDelegadoATabla('Fraternales', delegado);
                         }else if (delegado.tipodelegado === "Visita"){
-                            //templateVisitas += templateOriginal;
                             agregarDelegadoATabla('Visitas', delegado);
                         }else if (delegado.tipodelegado === "Consejeros y Superintendentes"){
-                            //templateConsejeros += templateOriginal;
                             agregarDelegadoATabla('Consejeros', delegado);
                         }else if (delegado.tipodelegado === "Representantes de Uniones"){
-                            //templateRepresentantesU += templateOriginal;
                             agregarDelegadoATabla('RepresentantesU', delegado);
                         }else{
-                            //templatePersonalRP += templateOriginal;
                             agregarDelegadoATabla('PersonalRP', delegado);
                         }
-
-                        //templateOriginal = '';
                     });
-                    // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "productos"
-                    /*
-                    $('#Oficiales').html(templateOficiales);
-                    $('#Fraternales').html(templateFraternales);
-                    $('#Visitas').html(templateVisitas);
-                    $('#Consejeros').html(templateConsejeros);
-                    $('#RepresentantesU').html(templateRepresentantesU);
-                    $('#PersonalRP').html(templatePersonalRP);*/
                 }
             }
         });
     }
 
+    // Funcion que crear las tablas dependiendo el tipo de delegado.
     function agregarDelegadoATabla(tablaId, delegado) {
         const tbody = document.getElementById(tablaId);
         const fila = document.createElement('tr');
 
         let descripcion = '';
-            descripcion += ''+delegado.categoria+'  ';
-            descripcion += ',  '+delegado.sociedad+'  ';
-            descripcion += ',  '+delegado.iglesia+'  ';
-            descripcion += ',  '+delegado.domicilio+'';
+        descripcion += delegado.categoria + ' ' + delegado.sociedad + ', ' + delegado.iglesia + ', ' + delegado.domicilio;
 
         let selects = '';
         for (let i = 1; i <= 6; i++) {
+            const estado = delegado.asistencias?.[i] || '';
             selects += `
-            <td>
-                <select class="form-select form-select-sm asistencia" 
-                        data-sesion="${i}" 
-                        data-tabla="${tablaId}">
-                <option value="">-</option>
-                <option value="presente">✓</option>
-                <option value="ausente">×</option>
-                </select>
-            </td>`;
+                <td>
+                    <select class="form-select form-select-sm asistencia" 
+                            data-sesion="${i}" 
+                            data-tabla="${tablaId}">
+                        <option value="" ${estado === '' ? 'selected' : ''}>-</option>
+                        <option value="presente" ${estado === 'presente' ? 'selected' : ''}>✓</option>
+                        <option value="ausente" ${estado === 'ausente' ? 'selected' : ''}>×</option>
+                    </select>
+                </td>`;
         }
-
         fila.innerHTML = `
             <td>${delegado.id}</td>
             <td>${delegado.nombre}</td>
@@ -298,21 +240,16 @@ $(document).ready(function(){
             <td></td> <!-- columna extra si la necesitas -->
         `;
         tbody.appendChild(fila);
-        }
+        actualizarResumenPorTabla(tablaId);
+    }
 
-    document.addEventListener('change', function (e) {
-        if (e.target.classList.contains('asistencia')) {
-            const tablaId = e.target.dataset.tabla;
-            actualizarResumenPorTabla(tablaId);
-        }
-        });
-
-        function actualizarResumenPorTabla(tablaId) {
-        const resumen = {};
-        for (let sesion = 1; sesion <= 6; sesion++) {
-            resumen[sesion] = { presentes: 0, total: 0 };
-        }
-
+    // Actualiza los resumenes de cada tabla de cada tipo de de delegado
+    function actualizarResumenPorTabla(tablaId) {
+    const resumen = {};
+    for (let sesion = 1; sesion <= 6; sesion++) {
+        resumen[sesion] = { presentes: 0, total: 0 };
+    }
+        // Verifica el Select con la clase asistencia, y con un contador, va haciendo un resumen.
         document.querySelectorAll(`#${tablaId} .asistencia`).forEach(select => {
             const sesion = select.dataset.sesion;
             resumen[sesion].total += 1;
@@ -320,15 +257,55 @@ $(document).ready(function(){
             resumen[sesion].presentes += 1;
             }
         });
-
         // Mostrar resumen
         const resumenDiv = document.getElementById(`resumen-${tablaId}`);
         resumenDiv.innerHTML = '<strong>Resumen por sesión:</strong><br>' +
             Object.entries(resumen).map(([num, data]) => {
             return `Sesión ${num}: ${data.presentes} / ${data.total}`;
             }).join('<br>');
-        }
+    }
 
+    // Cuando el select cambia, entonces, se guarda en la base de datos que se tiene.
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('asistencia')) {
+            const select = e.target;
+            const tablaId = select.dataset.tabla;
+            const fila = select.closest('tr');
+            const idDelegado = fila.children[0].textContent.trim(); // Asumiendo que el ID está en la primera columna
+            const sesion = select.dataset.sesion;
+            const estado = select.value;
+
+            // Actualizar resumen visual
+            actualizarResumenPorTabla(tablaId);
+
+            // Guardar asistencia vía AJAX
+            fetch('./backend/guardar-asistencia.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    id_delegado: idDelegado,
+                    sesion: sesion,
+                    estado: estado
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error('Error al guardar asistencia:', data.error);
+                    alert('No se pudo guardar la asistencia.');
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+            });
+        }
+    });    
+
+    ///////////////////////////////////////////////////////////
+    ///////////////////// PÁGINA index.php ////////////////////
+    ///////////////////////////////////////////////////////////
 
     function listarDelegados() {
         $.ajax({
@@ -346,11 +323,11 @@ $(document).ready(function(){
                     delegados.forEach(delegado => {
                         // SE CREA UNA LISTA HTML CON LA DESCRIPCIÓN DEL PRODUCTO
                         let descripcion = '';
-                        descripcion += '<li>categoria: '+delegado.categoria+'</li>';
-                        descripcion += '<li>sociedad: '+delegado.sociedad+'</li>';
-                        descripcion += '<li>iglesia: '+delegado.iglesia+'</li>';
-                        descripcion += '<li>domicilio: '+delegado.domicilio+'</li>';
-                        descripcion += '<li>Tipo delegado: '+delegado.tipodelegado+'</li>';
+                        descripcion += '<li>CATEGORIA:  '+delegado.categoria+'</li>';
+                        descripcion += '<li>SOCIEDAD:  '+delegado.sociedad+'</li>';
+                        descripcion += '<li>IGLESIA:  '+delegado.iglesia+'</li>';
+                        descripcion += '<li>DOMICILIO:  '+delegado.domicilio+'</li>';
+                        descripcion += '<li>TIPO DELEGADO: <strong> '+delegado.tipodelegado+'</strong></li>';
                     
                         template += `
                             <tr delegadoID="${delegado.id}">
@@ -365,13 +342,18 @@ $(document).ready(function(){
                             </tr>
                         `;
                     });
-                    // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "productos"
+                    // SE INSERTA LA PLANTILLA EN EL ELEMENTO CON ID "delegados"
                     $('#delegados').html(template);
                 }
             }
         });
     }
 
+    ///////////////////////////////////////////////////////////
+    //////////////// Eventos en el campo #name ////////////////
+    ///////////////////////////////////////////////////////////
+
+    // Escucha los cambios en el input llamado name.
     $('#name').on('keyup', function () {
         if ($('#name').val()) {
             let search = $('#name').val();
@@ -382,10 +364,11 @@ $(document).ready(function(){
                 success: function (response) {
                     try {
                         const delegados = JSON.parse(response);
-
                         if (delegados.length > 0) {
                             let nombres = '';
                             delegados.forEach(delegado => {
+                                // Para cada delegado obtenido, se hace un template con diferentes datos.
+                                // Se pone varios datos para verse en el div, pero solo se envia el dato del nombre.
                                 nombres += `
                                     <div class="opcion-nombre" data-nombre="${delegado.nombre}">
                                         <strong>${delegado.nombre}</strong><br>
@@ -413,13 +396,17 @@ $(document).ready(function(){
         }
     });
 
-    // ⬇️ Mueve esta parte fuera del `keyup` para evitar múltiples bindings
+    // Escucha cuando se da click en alguna opcion de los nombres que se generan en el input name.
     $(document).on('click', '.opcion-nombre', function () {
+        // Obtiene el texto del input name.
         let nombreSeleccionado = $(this).data('nombre');
+        // Se pone el dato en el input name.
         $('#name').val(nombreSeleccionado);
+        // Se oculta la lista de nombre encontrados.
         $('#lista-nombres').hide();
 
         $.post('./backend/delegados-miembros_ec.php', { nombreSeleccionado }, (response) => {
+            // En caso de que se obtenga un respuesta, se insertan los datos en los diferentes campos.
             try {
                 let delegado = JSON.parse(response);
                 $('#name').val(delegado.nombre);
@@ -436,10 +423,14 @@ $(document).ready(function(){
         });
     });
 
+    ///////////////////////////////////////////////////////////
+    ////////////// Eventos en el campo #sociedad //////////////
+    ///////////////////////////////////////////////////////////
+
+    // Escucha los cambios hechos en el input sociedad.
     $('#sociedad').on('keyup', function () {
-        
+        // Si tiene datos el input, entonces...
         if ($('#sociedad').val()) {
-            
             let search = $('#sociedad').val();
             $.ajax({
                 url: './backend/delegados-search_sociedades.php?sociedad=' + encodeURIComponent(search),
@@ -448,10 +439,11 @@ $(document).ready(function(){
                 success: function (response) {
                     try {
                         const sociedades = JSON.parse(response);
-
                         if (sociedades.length > 0) {
                             let nombres = '';
                             sociedades.forEach(sociedad => {
+                                // Para cada sociedad obtenida, se hace un template con diferentes datos.
+                                // Se pone varios datos para verse en el div, pero solo se envia el dato de la sociedad.
                                 nombres += `
                                     <div class="opcion-sociedad" data-sociedad="${sociedad.sociedad}">
                                         <strong>${sociedad.sociedad}</strong><br>
@@ -479,7 +471,7 @@ $(document).ready(function(){
         }
     });
 
-    // ⬇️ Mueve esta parte fuera del `keyup` para evitar múltiples bindings
+    // Escucha cuando se hace click en alguna opcion que se genera en el input sociedad.
     $(document).on('click', '.opcion-sociedad', function () {
         let nombresociedad = $(this).data('sociedad');
         $('#sociedad').val(nombresociedad);
@@ -492,8 +484,6 @@ $(document).ready(function(){
                 $('#sociedad').val(sociedad.sociedad);
                 $('#iglesia').val(sociedad.iglesia);
                 $('#domicilio').val(sociedad.domicilio);
-                $('#tipodelegado').val(sociedad.tipodelegado);
-                $('#cuota').val(sociedad.cuota);
             } catch (e) {
                 console.error("Error al parsear respuesta del delegado:", e);
                 console.log("Respuesta recibida:", response);
@@ -501,6 +491,11 @@ $(document).ready(function(){
         });
     });
 
+    ///////////////////////////////////////////////////////////
+    ////////////// Eventos en el campo #search ////////////////
+    ///////////////////////////////////////////////////////////
+
+    // Escucha cuando se hacen cambios en el input search.
     $('#search').keyup(function() {
         if($('#search').val()) {0
             let search = $('#search').val();
@@ -562,6 +557,10 @@ $(document).ready(function(){
         }
     });
 
+    ///////////////////////////////////////////////////////////
+    ///////// Eventos en el formulario #delegado-form /////////
+    ///////////////////////////////////////////////////////////
+
     $('#delegado-form').submit(e => {
         e.preventDefault();
         console.log($('#cuota').val());
@@ -576,9 +575,8 @@ $(document).ready(function(){
             cuota: $('#cuota').val()
         };
 
-
+        // En caso de que la varible edit es false, se agrega como nuevo dato, en caso contrario se edita el delegado.
         const url = edit === false ? './backend/delegados-add.php' : './backend/delegados-edit.php';
-        console.log(postData)
         $.post(url, postData, (response) => {
             console.log(response);
             // SE OBTIENE EL OBJETO DE DATOS A PARTIR DE UN STRING JSON
@@ -586,8 +584,8 @@ $(document).ready(function(){
             // SE CREA UNA PLANTILLA PARA CREAR INFORMACIÓN DE LA BARRA DE ESTADO
             let template_bar = '';
             template_bar += `
-                        <li style="list-style: none;">status: ${respuesta.status}</li>
-                        <li style="list-style: none;">message: ${respuesta.message}</li>
+                        <li style="list-style: none;">Estatus: ${respuesta.status}</li>
+                        <li style="list-style: none;">Mensaje: ${respuesta.message}</li>
                     `;
             // SE REINICIA EL FORMULARIO
             $('#name').val('');
@@ -608,6 +606,10 @@ $(document).ready(function(){
         });
     });
 
+    ///////////////////////////////////////////////////////////
+    //////////////// Verificacion de Cuotas ///////////////////
+    ///////////////////////////////////////////////////////////
+    
     $('#categoria').on('change', function(){
         let categoria = $(this).val();
         console.log(categoria);
@@ -645,6 +647,10 @@ $(document).ready(function(){
         }
     });
 
+    ///////////////////////////////////////////////////////////
+    ///////// Eventos en el formulario #delegado-form /////////
+    ///////////////////////////////////////////////////////////
+
     $(document).on('click', '.delegados-delete', (e) => {
         if(confirm('¿Realmente deseas eliminar el Delegado?')) {
             const element = $(this)[0].activeElement.parentElement.parentElement;
@@ -665,6 +671,10 @@ $(document).ready(function(){
             });
         }
     });
+
+    ///////////////////////////////////////////////////////////
+    //////////// Eventos para editar a un delegado ////////////
+    ///////////////////////////////////////////////////////////
 
     $(document).on('click', '.delegado-item', (e) => {
         const element = $(this)[0].activeElement.parentElement.parentElement;
@@ -691,77 +701,5 @@ $(document).ready(function(){
         });
         e.preventDefault();
     });    
-
-/*
-
-    // Función para validar el formulario completo
-    function validarFormulario(data) {
-        return validarNombre(data.nombre) &&
-            validarModelo(data.categoria) &&
-            validarPrecio(data.sociedad) &&
-            validarDetalles(data.iglesia) &&
-            validarUnidades(data.domicilio);
-    }
-
-    // Funciones de validación individuales con mensajes en tiempo real
-
-    $('#name').focusout(() => validarNombre($('#name').val()));
-    $('#modelo').focusout(() => validarModelo($('#modelo').val()));
-    $('#precio').focusout(() => validarPrecio($('#precio').val()));
-    $('#detalles').focusout(() => validarDetalles($('#detalles').val()));
-    $('#unidades').focusout(() => validarUnidades($('#unidades').val()));
-
-    function mostrarEstado(campo, mensaje, esValido) {
-        const estado = $(`#estado-${campo}`);
-        estado.text(mensaje);
-        estado.css('color', esValido ? 'green' : 'red');
-        estado.show();
-    }
-
-    function validarNombre(nombre) {
-        if (nombre === "" || nombre.length > 100) {
-            mostrarEstado('nombre', "El nombre es requerido y debe tener 100 caracteres o menos.", false);
-            return false;
-        }
-        mostrarEstado('nombre', "Nombre válido", true);
-        return true;
-    }
-
-    function validarModelo(modelo) {
-        if (!/^[a-zA-Z0-9]+$/.test(modelo) || modelo.length > 25) {
-            mostrarEstado('modelo', "El modelo es requerido, alfanumérico y de máximo 25 caracteres.", false);
-            return false;
-        }
-        mostrarEstado('modelo', "Modelo válido", true);
-        return true;
-    }
-
-    function validarPrecio(precio) {
-        if (isNaN(precio) || precio <= 99.99) {
-            mostrarEstado('precio', "El precio debe ser mayor a 99.99.", false);
-            return false;
-        }
-        mostrarEstado('precio', "Precio válido", true);
-        return true;
-    }
-
-    function validarDetalles(detalles) {
-        if (detalles.length > 250) {
-            mostrarEstado('detalles', "Los detalles no deben exceder 250 caracteres.", false);
-            return false;
-        }
-        mostrarEstado('detalles', "Detalles válidos", true);
-        return true;
-    }
-
-    function validarUnidades(unidades) {
-        if (isNaN(unidades) || unidades < 0) {
-            mostrarEstado('unidades', "Las unidades deben ser mayores o iguales a 0.", false);
-            return false;
-        }
-        mostrarEstado('unidades', "Unidades válidas", true);
-        return true;
-    }
-
-*/
 });
+

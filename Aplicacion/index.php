@@ -24,7 +24,7 @@
                   <div id="estado-nombre" style="display: none;"></div>
                 </div>
                 <div class="form-group">
-                  <select class="delegado-categoria" id="categoria" name="categoria" disabled>
+                  <select class="delegado-categoria" id="categoria" name="categoria" required>
                     <option class='delegado-categoria' value="">Selecciona una categoria</option>
                     <option class='delegado-categoria' value="SAEC">SAEC</option>
                     <option class='delegado-categoria' value="SJEC">SJEC</option>

@@ -186,6 +186,45 @@ class Delegados extends DataBase {
         $this->response = $data;
     }
 
+    public function listaconAsistencia() {
+        $data = array();
+
+        $sql = "SELECT * FROM delegados WHERE eliminado = 0";
+        $result = $this->query($sql);
+
+        if (is_object($result) && $result->num_rows > 0) {
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+
+            
+            foreach ($rows as $num => $row) {
+                $delegado_id = $row['id'];
+               
+                // Consulta asistencias por delegado
+                $asistencias = array();
+                $asist_sql = "SELECT sesion, estado FROM asistencia WHERE id_delegado = {$delegado_id}";
+                $asist_result = $this->query($asist_sql);
+
+                if (is_object($asist_result) && $asist_result->num_rows > 0) {
+                    while ($asist_row = $asist_result->fetch_assoc()) {
+                        $asistencias[$asist_row['sesion']] = $asist_row['estado'];
+                    }
+                    $asist_result->free();
+                }
+
+                $row['asistencias'] = $asistencias; // Añadimos al delegado
+                $data[$num] = $row;
+            }
+    
+
+            $result->free();
+        } else {
+            die('Error en la consulta: ' . mysqli_error($this->conexion));
+        }
+
+        $this->response = $data;
+    }
+
+
     public function search($search) {
         // Inicializa el arreglo de respuesta
         $data = array();
@@ -336,6 +375,41 @@ class Delegados extends DataBase {
         // Convierte el array de response a un string JSON y lo retorna
         return json_encode($this->response, JSON_PRETTY_PRINT);
     }
+
+    public function guardarAsistencia($idDelegado, $sesion, $estado) {
+        // Primero valida que los datos sean correctos
+        if (!is_numeric($idDelegado) || !is_numeric($sesion)) {
+            $this->response = 'Datos inválidos';
+            return false;
+        }
+
+        // Verifica si ya existe ese registro
+        $stmt = $this->conexion->prepare("SELECT id FROM asistencia WHERE id_delegado = ? AND sesion = ?");
+        $stmt->bind_param("ii", $idDelegado, $sesion);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+
+        if ($resultado && $resultado->num_rows > 0) {
+            // Actualizar
+            $stmt = $this->conexion->prepare("UPDATE asistencia SET estado = ? WHERE id_delegado = ? AND sesion = ?");
+            $stmt->bind_param("sii", $estado, $idDelegado, $sesion);
+        } else {
+            // Insertar
+            $stmt = $this->conexion->prepare("INSERT INTO asistencia (id_delegado, sesion, estado) VALUES (?, ?, ?)");
+            $stmt->bind_param("iis", $idDelegado, $sesion, $estado);
+        }
+
+        if ($stmt->execute()) {
+            $this->response = "ok";
+            return true;
+        } else {
+            $this->response = "Error al guardar: " . $stmt->error;
+            return false;
+        }
+    }
+
+   
+
 
 }
 ?>

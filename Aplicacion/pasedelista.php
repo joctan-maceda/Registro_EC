@@ -185,8 +185,7 @@
                 <td><div id="resumen-PersonalRP" class="text-secondary small"></div></td>
                 </tr>
             </tbody>
-            </table>
-
+        </table>
     </div>
 
   </div>
