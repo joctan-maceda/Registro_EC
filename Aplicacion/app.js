@@ -4,7 +4,7 @@ $(document).ready(function(){
     let edit = false;
     $('#delegado-result').hide();
     $('#lista-nombres').hide();
-                        
+    $('#lista-sociedades').hide();                    
 // VERIFICAMOS EN PÁGINA ESTAMOS ACTUALMENTE
     const paginaActual = $('body').data('pagina'); 
 
@@ -332,7 +332,7 @@ $(document).ready(function(){
                         template += `
                             <tr delegadoID="${delegado.id}">
                                 <td>${delegado.id}</td>
-                                <td><a href="#" class="delegado-item">${delegado.nombre}</a></td>
+                                <td>${delegado.nombre}</td>
                                 <td><ul>${descripcion}</ul></td>
                                 <td>
                                     <button class="delegado-item btn btn-warning" >
@@ -514,22 +514,24 @@ $(document).ready(function(){
                             let template = '';
                             let template_bar = '';
 
+
+                            
                             delegados.forEach(delegado => {
                                 // SE CREA UNA LISTA HTML CON LA DESCRIPCIÓN DEL PRODUCTO
                                 let descripcion = '';
-                                descripcion += '<li>categoria: '+delegado.categoria+'</li>';
-                                descripcion += '<li>sociedad: '+delegado.sociedad+'</li>';
-                                descripcion += '<li>iglesia: '+delegado.iglesia+'</li>';
-                                descripcion += '<li>domicilio: '+delegado.domicilio+'</li>';
-                                descripcion += '<li>Tipo delegado: '+delegado.tipodelegado+'</li>';
+                                descripcion += '<li>CATEGORIA:  '+delegado.categoria+'</li>';
+                                descripcion += '<li>SOCIEDAD:  '+delegado.sociedad+'</li>';
+                                descripcion += '<li>IGLESIA:  '+delegado.iglesia+'</li>';
+                                descripcion += '<li>DOMICILIO:  '+delegado.domicilio+'</li>';
+                                descripcion += '<li>TIPO DELEGADO: <strong> '+delegado.tipodelegado+'</strong></li>';
                             
                                 template += `
                                     <tr delegadoID="${delegado.id}">
                                         <td>${delegado.id}</td>
-                                        <td><a href="#" class="delegado-item">${delegado.nombre}</a></td>
+                                        <td>${delegado.nombre}</td>
                                         <td><ul>${descripcion}</ul></td>
                                         <td>
-                                            <button class="delegado-item btn btn-warning">
+                                            <button class="delegado-item btn btn-warning" >
                                                 Editar
                                             </button>
                                         </td>
@@ -538,8 +540,10 @@ $(document).ready(function(){
 
                                 template_bar += `
                                     <li>${delegado.nombre}</il>
-                                `;
-                            });
+                                `;    
+
+                            });    
+
                             // SE HACE VISIBLE LA BARRA DE ESTADO
                             $('#delegado-result').show();
                             // SE INSERTA LA PLANTILLA PARA LA BARRA DE ESTADO
@@ -698,6 +702,11 @@ $(document).ready(function(){
             
             // SE PONE LA BANDERA DE EDICIÓN EN true
             edit = true;
+            
+            let input = document.getElementById('name');
+            // Damos el enfoque al campo nombre.
+            input.focus();
+
         });
         e.preventDefault();
     });    

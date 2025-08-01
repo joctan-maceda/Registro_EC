@@ -1,4 +1,4 @@
-#lista-nombres {
+#lista-nombres #lista-sociedades {
     border: 1px solid #ccc;
     max-height: 300px;
     overflow-y: auto;
@@ -12,9 +12,32 @@
     cursor: pointer;
   }
   #lista-nombres div:hover {
-    background-color: rgb(70, 72, 202);
+    background-color: rgb(197, 223, 226);
+  }
+
+  #lista-sociedades {
+    border: 1px solid #ccc;
+    max-height: 300px;
+    overflow-y: auto;
+    position: absolute;
+    background-color: rgba(250, 246, 246, 1);
+    width: 500px;
+    z-index: 100;
+  }
+  #lista-sociedades div {
+    padding: 5px;
+    cursor: pointer;
+  }
+  #lista-sociedades div:hover {
+    background-color: rgb(197, 223, 226);
   }
 
  body {
     padding-top: 70px; /* para que el contenido no quede debajo del navbar fijo */
   }
+  
+  .position-sticky {
+  position: sticky;
+  top: 1rem;
+  z-index: 1020; /* por encima de contenido normal */
+}

@@ -230,7 +230,7 @@ class Delegados extends DataBase {
         $data = array();
     
         // Construye la consulta para buscar en múltiples campos
-        $sql = "SELECT * FROM delegados WHERE (id = '{$search}' OR nombre LIKE '%{$search}%') AND eliminado = 0";
+        $sql = "SELECT * FROM delegados WHERE (id = '{$search}' OR nombre LIKE '%{$search}%' OR sociedad LIKE '%{$search}%') AND eliminado = 0";
         $result = $this->query($sql);
     
         // Verifica si hubo resultados y procesa los datos
@@ -249,6 +249,37 @@ class Delegados extends DataBase {
             $result->free();
         } else {
             die('Error en la consulta: ' . mysqli_error($this->conexion));
+        }
+    
+        // Almacena el resultado en response para luego poder usar getData()
+        $this->response = $data;
+    }
+
+    public function search_sociedades($search) {
+        // Inicializa el arreglo de respuesta
+        $data = array();
+    
+        // Construye la consulta para buscar en múltiples campos
+        $sql = "SELECT * FROM sociedades WHERE (sociedad LIKE '%{$search}%')";
+        $result = $this->query($sql);
+    
+        // Verifica si hubo resultados y procesa los datos
+        if (is_object($result) && $result->num_rows > 0) {
+            // Obtiene todos los resultados como un arreglo asociativo
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+    
+            if (!is_null($rows)) {
+                // Codifica a UTF-8 y mapea los datos al arreglo de respuesta
+                foreach ($rows as $num => $row) {
+                    foreach ($row as $key => $value) {
+                        $data[$num][$key] = $value;
+                    }
+                }
+            }
+            $result->free();
+        } else {
+            //die('Error en la consulta: ' . mysqli_error($this->conexion));
+            $data = [];
         }
     
         // Almacena el resultado en response para luego poder usar getData()
@@ -284,7 +315,7 @@ class Delegados extends DataBase {
         // Almacena el resultado en response para luego poder usar getData()
         $this->response = $data;
     }
-
+/*
     public function search_sociedades($search) {
         $data = array();
 
@@ -292,16 +323,24 @@ class Delegados extends DataBase {
         $stmt = $this->conexion->prepare("SELECT * FROM sociedades WHERE sociedad LIKE CONCAT('%', ?, '%')");
 
         if ($stmt === false) {
-            die('Error al preparar la consulta: ' . $this->conexion->error);
+            $this->response = [
+                'error' => true,
+                'message' => 'Error al preparar la consulta: ' . $this->conexion->error
+            ];
+            return;
         }
-
         // Une el parámetro a la consulta
         $stmt->bind_param("s", $search);
 
         // Ejecuta la consulta
         if (!$stmt->execute()) {
-            die('Error al ejecutar la consulta: ' . $stmt->error);
+            $this->response = [
+                'error' => true,
+                'message' => 'Error al ejecutar la consulta: ' . $stmt->error
+            ];
+            return;
         }
+
 
         // Obtiene el resultado
         $result = $stmt->get_result();
@@ -329,7 +368,7 @@ class Delegados extends DataBase {
         // Cierra el statement
         $stmt->close();
     }
-
+*/
     
     public function miembros_ec($nombreSeleccionado){
         $data = array();

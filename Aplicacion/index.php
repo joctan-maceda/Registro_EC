@@ -3,11 +3,14 @@
     <div class="container">
       <div class="row p-4">
         <div class="col-md-5">
-          <div class="card">
+          <div class="card" style="top: 1rem; z-index: 1020">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Agregar Delegado</h5>
+              </div>
             <div class="card-body">
               <!-- FORMULARIO PARA AGREGAR PRODUCTO -->
               <form id="delegado-form">
-                <div class="form-group">
+                <div class="form-group mb-3">
                   <select id="tipodelegado" name="tipodelegado">
                     <option value="">Selecciona una categoria</option>
                     <option value="Oficial">Oficial</option>
@@ -23,7 +26,7 @@
                   <div id="lista-nombres"></div><br>
                   <div id="estado-nombre" style="display: none;"></div>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-3">
                   <select class="delegado-categoria" id="categoria" name="categoria" required>
                     <option class='delegado-categoria' value="">Selecciona una categoria</option>
                     <option class='delegado-categoria' value="SAEC">SAEC</option>
@@ -43,23 +46,28 @@
                   <div id="lista-sociedades"></div><br>
                   <div id="estado-sociedad" style="display: none;"></div>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-2">
                   <input class="form-control" type="text" id="iglesia" placeholder="Tipo y nombre de la Iglesia" >
                   <div id="estado-iglesia" style="display: none;"></div>
                 </div>
-                <div class="form-group">
-                  <textarea class="form-control" id="domicilio" cols="20" rows="10" placeholder="Domicilio de la Iglesia" ></textarea>
+                <div class="form-group mb-2">
+                  <textarea class="form-control" id="domicilio" cols="20" rows="3" placeholder="Domicilio de la Iglesia" ></textarea>
                   <div id="estado-domicilio" style="display: none;"></div>
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group mb-2">
                   <input class="form-control" type="text" id="cuota" placeholder="Monto" required>
                   <div id="estado-cuota" style="display: none;"></div>
                 </div>
-                <input type="hidden" id="delegadoID">
-                <button class="btn btn-primary btn-block text-center" type="submit">
-                  Agregar Delegado
-                </button>
+                <div class="form-group d-flex">
+
+                  <input type="hidden" id="delegadoID">
+                <div class="d-grid">
+                  <button class="btn btn-primary" type="submit">
+                    Agregar Delegado
+                  </button>
+                </div>
+                </div>
               </form>
             </div>
           </div>

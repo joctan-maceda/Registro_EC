@@ -6,14 +6,7 @@ $delegado->search_sociedades($_GET['search']);
 ob_clean();
 header('Content-Type: application/json; charset=utf-8');
 
-$json = json_encode($delegado->getData(), JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT | JSON_HEX_APOS);
-
-if ($json === false) {
-    http_response_code(500);
-    die('Error al codificar JSON: ' . json_last_error_msg());
-}
-
-echo $json;
+echo json_encode($delegado->getData(), JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT | JSON_HEX_APOS);
 exit; 
 
 //echo json_encode($delegado->getData(), JSON_UNESCAPED_UNICODE);
