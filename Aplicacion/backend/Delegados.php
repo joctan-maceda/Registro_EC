@@ -6,7 +6,7 @@ require_once 'DataBase.php';
 class Delegados extends DataBase {
     protected $response;
 
-    public function __construct($dbName = 'registro_ec', $user = 'root', $password = 'Diosesamor577240323') {
+    public function __construct($dbName = 'registro_ec', $user = 'root', $password = '') {
         $this->response = null;
         parent::__construct($user, $password, $dbName);
     }
@@ -78,7 +78,7 @@ class Delegados extends DataBase {
             if (is_object($result) && $result->num_rows == 0) {
                 $this->conexion->set_charset("utf8");
 
-                $sql = "INSERT INTO delegados VALUES (null, '{$delegadoData->nombre}', '{$delegadoData->categoria}', '{$delegadoData->sociedad}', '{$delegadoData->iglesia}', '{$delegadoData->domicilio}', '{$delegadoData->tipodelegado}',{$delegadoData->cuota}, 0,0)";
+                $sql = "INSERT INTO delegados VALUES (null, '{$delegadoData->nombre}', '{$delegadoData->categoria}', '{$delegadoData->sociedad}', '{$delegadoData->iglesia}', '{$delegadoData->domicilio}', '{$delegadoData->tipodelegado}',{$delegadoData->cuota}, 0)";
                 
                 if ($this->query($sql)) {
                     $data['status'] = "success";

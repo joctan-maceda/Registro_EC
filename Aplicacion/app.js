@@ -314,7 +314,7 @@ $(document).ready(function(){
             success: function(response) {
                 // SE OBTIENE EL OBJETO DE DATOS A PARTIR DE UN STRING JSON
                 const delegados = JSON.parse(response);
-            
+                console.log(delegados);
                 // SE VERIFICA SI EL OBJETO JSON TIENE DATOS
                 if(Object.keys(delegados).length > 0) {
                     // SE CREA UNA PLANTILLA PARA CREAR LAS FILAS A INSERTAR EN EL DOCUMENTO HTML
